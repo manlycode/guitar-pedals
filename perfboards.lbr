@@ -7129,7 +7129,7 @@
 </symbol>
 </symbols>
 <devicesets>
-<deviceset name="GREEN-2-SIDED" uservalue="yes">
+<deviceset name="GREEN-2-SIDED">
 <description>Green 2 sided perfboard</description>
 <gates>
 <gate name="G$1" symbol="GREEN-2-SIDED" x="0" y="0"/>
