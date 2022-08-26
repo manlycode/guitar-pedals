@@ -1,0 +1,6 @@
+# Ignorar
+*.raw
+*.net
+*.log
+*.bak
+stamp.bin
