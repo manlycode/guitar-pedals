@@ -1006,6 +1006,27 @@ Feel free to contact us at &lt;a href="mailto:Support@PCBLayout.com"&gt;Support@
 <wire x1="124.46" y1="73.66" x2="124.46" y2="50.8" width="0.1524" layer="91"/>
 </segment>
 </net>
+<net name="ENC_SWITCH" class="0">
+<segment>
+<pinref part="U1" gate="U1" pin="D3"/>
+<wire x1="104.14" y1="78.74" x2="134.62" y2="78.74" width="0.1524" layer="91"/>
+<label x="134.62" y="78.74" size="0.8128" layer="95" xref="yes"/>
+</segment>
+</net>
+<net name="ENC_A" class="0">
+<segment>
+<pinref part="U1" gate="U1" pin="D2"/>
+<wire x1="104.14" y1="76.2" x2="134.62" y2="76.2" width="0.1524" layer="91"/>
+<label x="134.62" y="76.2" size="0.8128" layer="95" xref="yes"/>
+</segment>
+</net>
+<net name="ENC_B" class="0">
+<segment>
+<pinref part="U1" gate="U1" pin="SCK"/>
+<wire x1="78.74" y1="83.82" x2="55.88" y2="83.82" width="0.1524" layer="91"/>
+<label x="55.88" y="83.82" size="0.8128" layer="95" rot="R180" xref="yes"/>
+</segment>
+</net>
 </nets>
 </sheet>
 </sheets>
