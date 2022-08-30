@@ -1,0 +1,326 @@
+svg {
+    vertical-align: middle;
+}
+  
+body {
+    font-family: 'Quicksand';
+}
+  
+.logo {
+    transition: 400ms;
+    transition-timing-function: ease-out;
+    -webkit-transition: 400ms;
+    -webkit-transition-timing-function: ease-out;
+}
+  
+.navbar {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    flex-wrap: nowrap;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16), 0 2px 10px rgba(0, 0, 0, 0.12);
+    min-width: 1554px;
+    font-size: 20px;
+    font-family: 'Roboto Mono';
+}
+  
+.logo-container {
+    text-align: left;
+    flex: 1;
+}
+  
+.do-container {
+    border-right: 2px lightgray solid;
+    padding-right: 20px;
+    margin-right: 20px;
+    display: inline-block;
+}
+  
+.tools-container {
+    font-size: 0;
+    flex: 1 0 auto;
+    text-align: center;
+    align-items: center;
+}
+  
+.tool-btn {
+    border: 0;
+    margin: 0;
+    padding: 12px;
+    background: white;
+    cursor: pointer;
+    border-radius: 5px;
+  
+    transition: 300ms;
+    transition-timing-function: ease-in-out;
+    -webkit-transition: 300ms;
+    -webkit-transition-timing-function: ease-in-out;
+}
+  
+.tools:hover:enabled {
+    background-color: #e4e4e4;
+}
+  
+.tools:active:enabled {
+    background-color: black;
+}
+  
+.coords-container {
+    flex: 1;
+    display: flex;
+    flex-direction: row-reverse;
+}
+  
+.coords-row {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    justify-content: flex-end;
+}
+  
+.coords {
+    text-align: right;
+    flex: 0 1 60px;
+    padding-right: 20px;
+}
+
+#xy-wrapper {
+    flex: 1;
+}
+
+#shape-wrapper {
+    display: none;
+    flex: 1;
+}
+
+.shape-info {
+    display: flex;
+}
+  
+#bitmap-tool-logo {
+    padding-left: 10px;
+}
+  
+#bitmap-tool-logo:hover #logo-text {
+    fill: white;
+}
+  
+#bitmap-tool-logo:hover #logo-background {
+    fill: black;
+}
+
+#undo-btn:disabled #undo-icon {
+    stroke: lightgray;
+}
+  
+#undo-btn:active:enabled #undo-icon {
+    stroke: white;
+}
+
+#redo-btn:disabled #redo-icon {
+    stroke: lightgray;
+}
+  
+#redo-btn:active:enabled #redo-icon {
+    stroke: white;
+}
+
+#select-tool-btn:active #select-icon {
+    fill: white;
+}
+#select-tool-btn.on {
+    background-color: black;
+}
+#select-tool-btn.on #select-icon {
+    fill: #ff2222;
+}
+  
+#flip-horizontal-btn:active #flip-horizontal-icon {
+    stroke: white;
+}
+  
+#flip-vertical-btn:active #flip-vertical-icon {
+    stroke: white;
+}
+  
+#invert-btn:active #invert-black {
+    fill: white;
+}
+#invert-btn:active #invert-white {
+    fill: black;
+}
+
+#pencil-tool-btn.on {
+    background-color: #ffe680;
+}
+  
+#eraser-tool-btn.on {
+    background-color: #ffaaaa;
+}
+  
+#line-tool-btn.on {
+    background-color: #e45316;
+}
+#line-tool-btn.on #line-icon {
+    stroke: white;
+}
+  
+#rectangle-tool-btn.on {
+    background-color: #18f38c;
+}
+#rectangle-tool-btn.on #rect-icon{
+    stroke: white;
+}
+
+#circle-tool-btn.on {
+    background-color: #5a77ff;
+}
+ #circle-tool-btn.on #circle-icon {
+    stroke: white;
+}
+
+.container {
+    padding-top: 30px;
+    text-align: center;
+}
+
+canvas {
+    image-rendering: pixelated;
+    cursor: crosshair;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#canvas-wrapper {
+    position: relative;
+    width: 1554px;
+    height: 778px;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+}
+
+#canvas-0 {
+    background-color: black;
+    z-index: 0;
+}
+
+#canvas-1 {
+    z-index: 1;
+}
+
+#canvas-2 {
+    z-index: 2;
+}
+
+.btn {
+    border: 0;
+    background: #ececec;
+    padding: 8px;
+    text-align: center;
+    font-size: 16px;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+    cursor: pointer;
+    font-family: 'Quicksand';
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16), 0 2px 10px rgba(0, 0, 0, 0.12);
+    border-radius: 5px;
+    margin: 8px;
+    min-width: 120px;
+}
+
+.btn:disabled {
+    background: none;
+}
+
+.btn:hover:enabled {
+    background: #bebebe;
+}
+
+.btn:active:enabled {
+    background-color: black;
+    color: white;
+}
+
+#clear-btn:hover {
+    background-color: #f31616;
+    color: white;
+}
+
+#clear-btn:active {
+    background-color: black;
+    color: white;
+}
+
+#panel-container {
+    align-items: center;
+    padding-top: 30px;
+    display: flex;
+    width: 1554px;
+    margin: 0 auto;
+}
+
+.panel {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16), 0 2px 10px rgba(0, 0, 0, 0.12);
+    flex: 1;
+    margin: 15px;
+    padding: 20px;
+    font-size: 20px;
+    min-height: 400px;
+}
+
+#filename-input {
+    border-radius: 5px;
+    font-size: 18px;
+    border: 2px #bebebe solid;
+    padding: 5px;
+    margin: 20px;
+}
+
+#input-error-wrapper {
+    background-color: #ff5555;
+    color: #282c34;
+    display: none;
+    width: 1556px;
+    margin: 0 auto;
+    font-size: 24px;
+    padding-top: 10px; 
+    padding-bottom: 20px;
+}
+
+#input-error-msg {
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.textarea-container {
+    margin: 0 auto;
+    text-align: center;
+    padding-top: 20px;
+}
+
+textarea {
+    background-color: #282c34;
+    color: #c27b59;
+	border: none;
+    margin: 0 auto;
+    padding-top: 20px;
+    padding-left: 20px;
+    width: 1534px;
+    height: 1554px;
+    font-family: 'Roboto Mono';
+    font-size: 18px;
+    white-space: nowrap;
+    resize: none;
+}
+
+textarea::selection {
+	background: #ececec;
+	color: #000000;
+}
+
+textarea::-moz-selection {
+	background: #ececec;
+	color: #000000;
+}

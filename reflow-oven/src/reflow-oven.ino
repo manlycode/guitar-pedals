@@ -1,6 +1,8 @@
-#include "Adafruit_GFX.h"
-#include "Adafruit_SSD1306.h"
+SYSTEM_THREAD(ENABLED);
+SYSTEM_MODE(SEMI_AUTOMATIC);
+
 #include "Encoder.h"
+#include "UI.h"
 
 /* ------------------------------------
 Pin definitions
@@ -24,41 +26,43 @@ Pin definitions
 #define ENCODER_A D2
 #define OLED_SCL D1
 #define OLED_SCA D0
-
-
 #define OLED_RESET D4   // not used
-// SerialLogHandler logHandler(LOG_LEVEL_INFO);
 
+
+SerialLogHandler logger;
 Adafruit_SSD1306 display(OLED_RESET);
+UI ui(&display);
 Encoder encoder(ENCODER_B, ENCODER_A);
 long oldPosition  = -999;
 
 void doButtonPress(){
-  Serial.println("Detected Change");
+  Log.info("Detected Change");
 }
 
 void doRotate(){
   int32_t value =  encoder.read();
-  Serial.printlnf("Value %i", value);
+  Log.trace("Value %i", value);
 }
 
 /* ------------------------------------
 CODE
 ------------------------------------ */
 
-void setup()   {                
-  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);  // initialize with the I2C addr 0x3D (for the 128x64)
-  display.display(); // show splashscreen
-  delay(500);
-  Serial.println("Basic Encoder Test:");
+
+void setup()   {
+  Serial.begin(9600);                
   pinMode(ENCODER_A, INPUT_PULLUP);
   pinMode(ENCODER_B, INPUT_PULLUP);
   pinMode(ENCODER_SWITCH, INPUT_PULLUP);
   attachInterrupt(ENCODER_SWITCH, doButtonPress, CHANGE);
   attachInterrupt(ENCODER_B, doRotate, FALLING);
-  Serial.begin(9600);
+  
+  ui.setup();
+  ui.splashScreen();
+
   interrupts();
-  Serial.println("starting");
+  Log.trace("starting");
+  Particle.connect();
 }
 
 
