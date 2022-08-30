@@ -14,14 +14,8 @@ static const unsigned char PROGMEM bitmap_name[] = {
  0B00001100, 0B00000000,
 };
 
-class UI
-{
-private:
-    Adafruit_SSD1306* oled;
-public:
-    UI(Adafruit_SSD1306*);
-    ~UI();
+namespace UI {
+    static Adafruit_SSD1306 oled(D4);
     void setup();
     void splashScreen();
-};
-
+}

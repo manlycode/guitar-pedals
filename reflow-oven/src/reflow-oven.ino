@@ -30,8 +30,6 @@ Pin definitions
 
 
 SerialLogHandler logger;
-Adafruit_SSD1306 display(OLED_RESET);
-UI ui(&display);
 Encoder encoder(ENCODER_B, ENCODER_A);
 long oldPosition  = -999;
 
@@ -57,8 +55,8 @@ void setup()   {
   attachInterrupt(ENCODER_SWITCH, doButtonPress, CHANGE);
   attachInterrupt(ENCODER_B, doRotate, FALLING);
   
-  ui.setup();
-  ui.splashScreen();
+  UI::setup();
+  UI::splashScreen();
 
   interrupts();
   Log.trace("starting");
