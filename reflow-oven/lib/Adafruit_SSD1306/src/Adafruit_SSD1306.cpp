@@ -15,7 +15,8 @@ Written by Limor Fried/Ladyada  for Adafruit Industries.
 BSD license, check license.txt for more information
 All text above, and the splash screen below must be included in any redistribution
 *********************************************************************/
-
+#ifndef ADAFRUIT_SSD_h
+#define ADAFRUIT_SSD_h
 #include "Adafruit_GFX.h"
 #include "Adafruit_SSD1306.h"
 
@@ -657,3 +658,4 @@ void Adafruit_SSD1306::drawFastVLineInternal(int16_t x, int16_t __y, int16_t __h
     }
   }
 }
+#endif

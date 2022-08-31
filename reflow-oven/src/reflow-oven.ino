@@ -3,7 +3,6 @@ SYSTEM_MODE(SEMI_AUTOMATIC);
 
 #include "Encoder.h"
 #include "UI.h"
-
 /* ------------------------------------
 Pin definitions
 ------------------------------------ */
@@ -31,6 +30,9 @@ Pin definitions
 
 SerialLogHandler logger;
 Encoder encoder(ENCODER_B, ENCODER_A);
+Adafruit_SSD1306 oled(OLED_RESET);
+UI ui(&oled);
+
 long oldPosition  = -999;
 
 void doButtonPress(){
@@ -55,8 +57,8 @@ void setup()   {
   attachInterrupt(ENCODER_SWITCH, doButtonPress, CHANGE);
   attachInterrupt(ENCODER_B, doRotate, FALLING);
   
-  UI::setup();
-  UI::splashScreen();
+  ui.setup();
+  ui.render();
 
   interrupts();
   Log.trace("starting");

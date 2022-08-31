@@ -1,21 +1,37 @@
+#ifndef UI_h
+#define UI_h
+
+#include "application.h"
 #include "Adafruit_SSD1306.h"
+class UI
+{
+private:
+    Adafruit_SSD1306* oled;
+    void (UI::*renderView)();
 
-#define bitmap_name_height 8
-#define bitmap_name_width 10
+public:
+    void setup();
+    void render();
 
-static const unsigned char PROGMEM bitmap_name[] = {
- 0B00000000, 0B00000000,
- 0B00000000, 0B00000000,
- 0B00111111, 0B00000000,
- 0B01000000, 0B10000000,
- 0B00011110, 0B00000000,
- 0B00100001, 0B00000000,
- 0B00001100, 0B00000000,
- 0B00001100, 0B00000000,
+    // Top Bar methods
+    void renderTopBar();
+    void clearTopBar();
+
+    // Main view methods
+    void renderSplashScreen();
+    void renderSplashScreen2();
+    UI(Adafruit_SSD1306* _oled)
+    {
+        oled = _oled;
+        // renderView = &UI::renderSplashScreen;
+        renderView = &UI::renderSplashScreen;
+    }
+
+    ~UI()
+    {
+    }
 };
 
-namespace UI {
-    static Adafruit_SSD1306 oled(D4);
-    void setup();
-    void splashScreen();
-}
+
+
+#endif
