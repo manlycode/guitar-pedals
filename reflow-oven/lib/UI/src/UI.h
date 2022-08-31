@@ -8,6 +8,7 @@ class UI
 private:
     Adafruit_SSD1306* oled;
     void (UI::*renderView)();
+    int32_t rotateVal;
 
 public:
     void setup();
@@ -21,11 +22,17 @@ public:
     void clearView();
     void renderSplashScreen();
     void renderSplashScreen2();
+
+    // Callbacks
+    void buttonCallback();
+    void rotateCallback(int32_t value);
+
     UI(Adafruit_SSD1306* _oled)
     {
         oled = _oled;
         // renderView = &UI::renderSplashScreen;
         renderView = &UI::renderSplashScreen;
+        rotateVal = -999;
     }
 
     ~UI()

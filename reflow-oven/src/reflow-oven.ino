@@ -1,4 +1,4 @@
-SYSTEM_THREAD(ENABLED);
+// SYSTEM_THREAD(ENABLED);
 SYSTEM_MODE(SEMI_AUTOMATIC);
 
 #include "Encoder.h"
@@ -36,12 +36,12 @@ UI ui(&oled);
 long oldPosition  = -999;
 
 void doButtonPress(){
-  Log.info("Detected Change");
+  ui.buttonCallback();
 }
 
 void doRotate(){
-  int32_t value =  encoder.read();
-  Log.trace("Value %i", value);
+  int32_t val = encoder.read();
+  ui.rotateCallback(val);
 }
 
 /* ------------------------------------
@@ -50,22 +50,24 @@ CODE
 
 
 void setup()   {
-  Serial.begin(9600);                
+  Serial.begin(9600);              
+  // waitFor(Serial.isConnected, 15000);
+
+  // Log("serial connected");
   pinMode(ENCODER_A, INPUT_PULLUP);
   pinMode(ENCODER_B, INPUT_PULLUP);
   pinMode(ENCODER_SWITCH, INPUT_PULLUP);
-  attachInterrupt(ENCODER_SWITCH, doButtonPress, CHANGE);
-  attachInterrupt(ENCODER_B, doRotate, FALLING);
-  
   ui.setup();
   ui.render();
 
+  attachInterrupt(ENCODER_SWITCH, doButtonPress, CHANGE);
+  attachInterrupt(ENCODER_B, doRotate, FALLING);
   interrupts();
-  Log.trace("starting");
-  Particle.connect();
+  // Serial.printlnf("starting...");
+  // Particle.connect();
 }
 
 
 void loop() {
-  delay(100);
+  ui.render();
 }

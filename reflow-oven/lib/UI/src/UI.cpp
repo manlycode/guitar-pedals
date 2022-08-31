@@ -7,17 +7,13 @@ void UI::setup()
 {   
     oled->begin(SSD1306_SWITCHCAPVCC, 0x3C);  // initialize with the I2C addr 0x3D (for the 128x64)
     oled->clearDisplay();
-    delay(100);
 }
 
 void UI::render() {
     renderTopBar();
     (*this.*renderView)();
     oled->display();
-    delay(1000);
-    clearView();
-    clearTopBar();
-    oled->display();
+    delay(1);
 }
 
 void UI::renderTopBar() {
@@ -33,15 +29,34 @@ void UI::clearView() {
 }
 
 void UI::renderSplashScreen() {
+    clearView();
     oled->setTextColor(WHITE);
-    oled->setTextSize(2);
+    oled->setTextSize(1);
     oled->setCursor(0, VIEW_Y);
-    oled->println("Screen 1");
+    oled->printf("Screen %lu", rotateVal);
+    oled->display();
+    delay(1);
 }
 
 void UI::renderSplashScreen2() {
+    clearView();
     oled->setTextColor(WHITE);
-    oled->setTextSize(2);
-    oled->setCursor(0, 5);
-    oled->println("Screen 2");
+    oled->setTextSize(1);
+    oled->setCursor(0, VIEW_Y);
+    oled->printf("Screen %lu", rotateVal);
+    oled->display();
+    delay(1);
+}
+
+void UI::buttonCallback() {
+}
+
+void UI::rotateCallback(int32_t value) {
+    uint32_t result = value - rotateVal;
+    rotateVal = value;
+    if (result >= 1) {
+        renderView = &UI::renderSplashScreen2;
+    } else {
+        renderView = &UI::renderSplashScreen;
+    }
 }
