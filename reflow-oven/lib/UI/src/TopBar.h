@@ -6,6 +6,6 @@
 #define TOP_BAR_HEIGHT 11
 #define TOP_BAR_WIDTH 128
 #define TOP_BAR_X 0
-#define TOP_BAR_Y 128
+#define TOP_BAR_Y 0
 
 #endif

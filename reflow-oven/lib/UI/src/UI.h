@@ -18,6 +18,7 @@ public:
     void clearTopBar();
 
     // Main view methods
+    void clearView();
     void renderSplashScreen();
     void renderSplashScreen2();
     UI(Adafruit_SSD1306* _oled)
