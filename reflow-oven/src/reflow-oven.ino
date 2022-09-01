@@ -95,7 +95,7 @@ void setup()   {
   attachInterrupt(PHASE_ANGLE_ZERO, phaseAngleZero, RISING);
   interrupts();
   // Serial.printlnf("starting...");
-  // Particle.connect();
+  Particle.connect();
 }
 
 
