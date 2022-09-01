@@ -11,7 +11,6 @@ void UI::setup()
 
 void UI::render() {
     if (!needsRender) {
-        delay(1);
         return;
     }
 
@@ -41,7 +40,7 @@ void UI::renderSplashScreen() {
     oled->setTextSize(1);
     oled->setCursor(0, VIEW_Y);
     oled->printlnf(F("Delay %d"), heaterDelay);
-    oled->printlnf(F("Heater: %s"),  heaterOn ? F("true") : F("false"));
+    oled->printlnf(F("Heater: %s"),  heaterOn ? F("On") : F("Off"));
     oled->display();
     delay(1);
 }
@@ -56,8 +55,8 @@ void UI::renderSplashScreen2() {
     delay(1);
 }
 
-void UI::buttonCallback() {
-    heaterOn = !heaterOn;
+void UI::buttonCallback(uint8_t heaterVal) {
+    heaterOn = !!heaterVal;
     needsRender = true;
 
 }
@@ -65,7 +64,7 @@ void UI::buttonCallback() {
 void UI::rotateCallback(int32_t value) {
 
     if (value < rotateVal) {
-        if (heaterDelay < 17) {
+        if (heaterDelay < 34) {
             heaterDelay++;
         }
     } else {

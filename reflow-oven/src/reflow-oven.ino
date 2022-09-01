@@ -34,18 +34,37 @@ Adafruit_SSD1306 oled(OLED_RESET);
 UI ui(&oled);
 
 long oldPosition  = -999;
+bool heaterEnabled = 0;
+bool heaterState = 0;
 
-void doButtonPress(){
+void phaseAngleZero(){
+  if (!heaterEnabled) {
+    return;
+  }
   noInterrupts();
-  ui.buttonCallback();
+  digitalWriteFast(HEATER_TOP, false);
+  digitalWriteFast(HEATER_MIDDLE, false);
+  digitalWriteFast(HEATER_BOTTOM, false);
+  delayMicroseconds(50*ui.heaterDelay);
+  digitalWriteFast(HEATER_TOP, true);
+  digitalWriteFast(HEATER_MIDDLE, true);
+  digitalWriteFast(HEATER_BOTTOM, true);
+  delayMicroseconds(500);
+  digitalWriteFast(HEATER_TOP, false);
+  digitalWriteFast(HEATER_MIDDLE, false);
+  digitalWriteFast(HEATER_BOTTOM, false);
   interrupts();
 }
 
+void doButtonPress(){
+  heaterEnabled = !heaterEnabled;
+  digitalWriteFast(HEATER_RELAY_ENABLE, heaterEnabled);
+  ui.buttonCallback(heaterEnabled);
+}
+
 void doRotate(){
-  noInterrupts();
   int32_t val = encoder.read();
   ui.rotateCallback(val);
-  interrupts();
 }
 
 /* ------------------------------------
@@ -61,11 +80,19 @@ void setup()   {
   pinMode(ENCODER_A, INPUT_PULLUP);
   pinMode(ENCODER_B, INPUT_PULLUP);
   pinMode(ENCODER_SWITCH, INPUT_PULLUP);
+
+  pinMode(HEATER_RELAY_ENABLE, OUTPUT);
+  pinMode(PHASE_ANGLE_ZERO, INPUT_PULLDOWN);
+  pinMode(HEATER_TOP, OUTPUT);
+  pinMode(HEATER_MIDDLE, OUTPUT);
+  pinMode(HEATER_BOTTOM, OUTPUT);
+
   ui.setup();
   ui.render();
 
   attachInterrupt(ENCODER_SWITCH, doButtonPress, FALLING);
   attachInterrupt(ENCODER_B, doRotate, FALLING);
+  attachInterrupt(PHASE_ANGLE_ZERO, phaseAngleZero, RISING);
   interrupts();
   // Serial.printlnf("starting...");
   // Particle.connect();
@@ -74,4 +101,5 @@ void setup()   {
 
 void loop() {
   ui.render();
+  delay(1);
 }

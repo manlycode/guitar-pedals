@@ -10,10 +10,11 @@ private:
     void (UI::*renderView)();
     int32_t rotateVal;
     bool needsRender;
-    uint8_t heaterDelay;
+    
     bool heaterOn;
 
 public:
+    uint8_t heaterDelay;
     void setup();
     void render();
 
@@ -27,7 +28,7 @@ public:
     void renderSplashScreen2();
 
     // Callbacks
-    void buttonCallback();
+    void buttonCallback(uint8_t);
     void rotateCallback(int32_t value);
 
     UI(Adafruit_SSD1306* _oled)
