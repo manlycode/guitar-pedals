@@ -36,12 +36,16 @@ UI ui(&oled);
 long oldPosition  = -999;
 
 void doButtonPress(){
+  noInterrupts();
   ui.buttonCallback();
+  interrupts();
 }
 
 void doRotate(){
+  noInterrupts();
   int32_t val = encoder.read();
   ui.rotateCallback(val);
+  interrupts();
 }
 
 /* ------------------------------------
@@ -60,7 +64,7 @@ void setup()   {
   ui.setup();
   ui.render();
 
-  attachInterrupt(ENCODER_SWITCH, doButtonPress, CHANGE);
+  attachInterrupt(ENCODER_SWITCH, doButtonPress, FALLING);
   attachInterrupt(ENCODER_B, doRotate, FALLING);
   interrupts();
   // Serial.printlnf("starting...");

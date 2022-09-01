@@ -10,10 +10,17 @@ void UI::setup()
 }
 
 void UI::render() {
+    if (!needsRender) {
+        delay(1);
+        return;
+    }
+
     renderTopBar();
     (*this.*renderView)();
     oled->display();
     delay(1);
+    needsRender = false;
+
 }
 
 void UI::renderTopBar() {
@@ -33,7 +40,8 @@ void UI::renderSplashScreen() {
     oled->setTextColor(WHITE);
     oled->setTextSize(1);
     oled->setCursor(0, VIEW_Y);
-    oled->printf("Screen %lu", rotateVal);
+    oled->printlnf(F("Delay %d"), heaterDelay);
+    oled->printlnf(F("Heater: %s"),  heaterOn ? F("true") : F("false"));
     oled->display();
     delay(1);
 }
@@ -43,20 +51,29 @@ void UI::renderSplashScreen2() {
     oled->setTextColor(WHITE);
     oled->setTextSize(1);
     oled->setCursor(0, VIEW_Y);
-    oled->printf("Screen %lu", rotateVal);
+    oled->printf(F("Screen %d"), heaterDelay);
     oled->display();
     delay(1);
 }
 
 void UI::buttonCallback() {
+    heaterOn = !heaterOn;
+    needsRender = true;
+
 }
 
 void UI::rotateCallback(int32_t value) {
-    uint32_t result = value - rotateVal;
-    rotateVal = value;
-    if (result >= 1) {
-        renderView = &UI::renderSplashScreen2;
+
+    if (value < rotateVal) {
+        if (heaterDelay < 17) {
+            heaterDelay++;
+        }
     } else {
-        renderView = &UI::renderSplashScreen;
+        if (heaterDelay > 0) {
+            heaterDelay--;
+        }
     }
+
+    rotateVal = value;
+    needsRender = true;
 }

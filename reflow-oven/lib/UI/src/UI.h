@@ -9,6 +9,9 @@ private:
     Adafruit_SSD1306* oled;
     void (UI::*renderView)();
     int32_t rotateVal;
+    bool needsRender;
+    uint8_t heaterDelay;
+    bool heaterOn;
 
 public:
     void setup();
@@ -33,6 +36,9 @@ public:
         // renderView = &UI::renderSplashScreen;
         renderView = &UI::renderSplashScreen;
         rotateVal = -999;
+        needsRender = true;
+        heaterDelay = 0;
+        heaterOn = false;
     }
 
     ~UI()
