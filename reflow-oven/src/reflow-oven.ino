@@ -3,6 +3,7 @@ SYSTEM_MODE(SEMI_AUTOMATIC);
 
 #include "Encoder.h"
 #include "UI.h"
+#include "OvenState.h"
 /* ------------------------------------
 Pin definitions
 ------------------------------------ */
@@ -28,17 +29,31 @@ Pin definitions
 #define OLED_RESET D4   // not used
 
 
+Timer timerPulseEnabled(10000, doPulseEnabled, true);
+
 SerialLogHandler logger;
 Encoder encoder(ENCODER_B, ENCODER_A);
 Adafruit_SSD1306 oled(OLED_RESET);
-UI ui(&oled);
+
+OvenState ovenState = {
+  .heaterEnabled = false,
+  .heaterPulseEnabled = false,
+  .heaterDelay = 34
+};
+
+UI ui(&oled, &ovenState);
 
 long oldPosition  = -999;
-bool heaterEnabled = 0;
 bool heaterState = 0;
 
+
+
+void doPulseEnabled() {
+  ovenState.heaterPulseEnabled = true;
+}
+
 void phaseAngleZero(){
-  if (!heaterEnabled) {
+  if (!ovenState.heaterPulseEnabled) {
     return;
   }
   noInterrupts();
@@ -57,9 +72,14 @@ void phaseAngleZero(){
 }
 
 void doButtonPress(){
-  heaterEnabled = !heaterEnabled;
-  digitalWriteFast(HEATER_RELAY_ENABLE, heaterEnabled);
-  ui.buttonCallback(heaterEnabled);
+  ovenState.heaterEnabled = !ovenState.heaterEnabled;
+  digitalWriteFast(HEATER_RELAY_ENABLE, ovenState.heaterEnabled);
+  if (ovenState.heaterEnabled) {
+    timerPulseEnabled.start();
+  } else {
+    ovenState.heaterPulseEnabled = false;
+  }  
+  ui.buttonCallback(ovenState.heaterEnabled);
 }
 
 void doRotate(){
@@ -95,7 +115,7 @@ void setup()   {
   attachInterrupt(PHASE_ANGLE_ZERO, phaseAngleZero, RISING);
   interrupts();
   // Serial.printlnf("starting...");
-  Particle.connect();
+  // Particle.connect();
 }
 
 
