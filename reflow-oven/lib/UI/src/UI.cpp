@@ -55,22 +55,6 @@ void UI::renderSplashScreen2() {
     delay(1);
 }
 
-void UI::buttonCallback(uint8_t heaterVal) {
-    needsRender = true;
-}
-
-void UI::rotateCallback(int32_t value) {
-
-    if (value < rotateVal) {
-        if (heaterDelay < 34) {
-            heaterDelay++;
-        }
-    } else {
-        if (heaterDelay > 0) {
-            heaterDelay--;
-        }
-    }
-
-    rotateVal = value;
+void UI::markDirty() {
     needsRender = true;
 }

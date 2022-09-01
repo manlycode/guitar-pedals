@@ -29,17 +29,14 @@ Pin definitions
 #define OLED_RESET D4   // not used
 
 
-Timer timerPulseEnabled(10000, doPulseEnabled, true);
 
 SerialLogHandler logger;
 Encoder encoder(ENCODER_B, ENCODER_A);
 Adafruit_SSD1306 oled(OLED_RESET);
 
-OvenState ovenState = {
-  .heaterEnabled = false,
-  .heaterPulseEnabled = false,
-  .heaterDelay = 34
-};
+OvenState ovenState;
+Timer timerPulseReady(10000, &OvenState::onHeaterPulseReady, ovenState, true);
+
 
 UI ui(&oled, &ovenState);
 
@@ -47,13 +44,8 @@ long oldPosition  = -999;
 bool heaterState = 0;
 
 
-
-void doPulseEnabled() {
-  ovenState.heaterPulseEnabled = true;
-}
-
 void phaseAngleZero(){
-  if (!ovenState.heaterPulseEnabled) {
+  if (!ovenState.canHeat()) {
     return;
   }
   noInterrupts();
@@ -72,19 +64,22 @@ void phaseAngleZero(){
 }
 
 void doButtonPress(){
-  ovenState.heaterEnabled = !ovenState.heaterEnabled;
-  digitalWriteFast(HEATER_RELAY_ENABLE, ovenState.heaterEnabled);
-  if (ovenState.heaterEnabled) {
-    timerPulseEnabled.start();
+  if (ovenState.toggleHeater()) {
+    timerPulseReady.start();
   } else {
-    ovenState.heaterPulseEnabled = false;
-  }  
-  ui.buttonCallback(ovenState.heaterEnabled);
+    digitalWriteFast(HEATER_TOP, false);
+    digitalWriteFast(HEATER_MIDDLE, false);
+    digitalWriteFast(HEATER_BOTTOM, false);
+  }
+
+  digitalWriteFast(HEATER_RELAY_ENABLE, ovenState.heaterEnabled);
+  ui.markDirty();
 }
 
 void doRotate(){
-  int32_t val = encoder.read();
-  ui.rotateCallback(val);
+  int32_t value = encoder.read();
+  ovenState.incTicks(value < oldPosition);
+  ui.markDirty();
 }
 
 /* ------------------------------------

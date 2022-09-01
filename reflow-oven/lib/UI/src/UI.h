@@ -29,8 +29,7 @@ public:
     void renderSplashScreen2();
 
     // Callbacks
-    void buttonCallback(uint8_t);
-    void rotateCallback(int32_t value);
+    void markDirty();
 
     UI(Adafruit_SSD1306* _oled, OvenState* _ovenState)
     {
