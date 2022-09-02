@@ -5,11 +5,13 @@
 class OvenState
 {
 private:
-    uint8_t heaterDelayTicks;
+    
 
 public:
+    uint8_t heaterDelayTicks;
     bool heaterEnabled;
     bool heaterPulseReady;
+    int32_t tempVoltage;
 
     void onHeaterPulseReady();
     bool canHeat();
@@ -21,6 +23,7 @@ public:
         heaterEnabled = false;
         heaterPulseReady = false;
         heaterDelayTicks = 34;
+        tempVoltage = 0;
     }
 
     ~OvenState()

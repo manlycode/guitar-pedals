@@ -8,7 +8,7 @@ SYSTEM_MODE(SEMI_AUTOMATIC);
 Pin definitions
 ------------------------------------ */
 // Lefthand Pins
-#define NTC A0
+#define TEMP_NTC A0
 #define DC_FAN_ENABLE A1
 #define PHASE_ANGLE_ZERO A2
 #define CONVECTION_CONTROL A3
@@ -36,6 +36,7 @@ Adafruit_SSD1306 oled(OLED_RESET);
 
 OvenState ovenState;
 Timer timerPulseReady(10000, &OvenState::onHeaterPulseReady, ovenState, true);
+Timer periodic(1000, doPeriodic);
 
 
 UI ui(&oled, &ovenState);
@@ -52,11 +53,11 @@ void phaseAngleZero(){
   digitalWriteFast(HEATER_TOP, false);
   digitalWriteFast(HEATER_MIDDLE, false);
   digitalWriteFast(HEATER_BOTTOM, false);
-  delayMicroseconds(50*ui.heaterDelay);
+  delayMicroseconds(50*ovenState.heaterDelayTicks);
   digitalWriteFast(HEATER_TOP, true);
   digitalWriteFast(HEATER_MIDDLE, true);
   digitalWriteFast(HEATER_BOTTOM, true);
-  delayMicroseconds(500);
+  delayMicroseconds(800);
   digitalWriteFast(HEATER_TOP, false);
   digitalWriteFast(HEATER_MIDDLE, false);
   digitalWriteFast(HEATER_BOTTOM, false);
@@ -67,11 +68,13 @@ void doButtonPress(){
   if (ovenState.toggleHeater()) {
     timerPulseReady.start();
   } else {
+    noInterrupts();
     digitalWriteFast(HEATER_TOP, false);
     digitalWriteFast(HEATER_MIDDLE, false);
     digitalWriteFast(HEATER_BOTTOM, false);
+    interrupts();  
   }
-
+  
   digitalWriteFast(HEATER_RELAY_ENABLE, ovenState.heaterEnabled);
   ui.markDirty();
 }
@@ -79,6 +82,12 @@ void doButtonPress(){
 void doRotate(){
   int32_t value = encoder.read();
   ovenState.incTicks(value < oldPosition);
+  oldPosition = value;
+  ui.markDirty();
+}
+
+void doPeriodic(){
+  ovenState.tempVoltage = analogRead(TEMP_NTC);
   ui.markDirty();
 }
 
@@ -102,6 +111,8 @@ void setup()   {
   pinMode(HEATER_MIDDLE, OUTPUT);
   pinMode(HEATER_BOTTOM, OUTPUT);
 
+  pinMode(TEMP_NTC, INPUT);
+
   ui.setup();
   ui.render();
 
@@ -109,6 +120,7 @@ void setup()   {
   attachInterrupt(ENCODER_B, doRotate, FALLING);
   attachInterrupt(PHASE_ANGLE_ZERO, phaseAngleZero, RISING);
   interrupts();
+  periodic.start();
   // Serial.printlnf("starting...");
   // Particle.connect();
 }
