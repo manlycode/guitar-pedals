@@ -12,8 +12,11 @@ public:
     bool heaterEnabled;
     bool heaterPulseReady;
     int32_t tempVoltage;
+    int32_t targetTempVoltage;
+    int32_t tempVelocity;
 
     void onHeaterPulseReady();
+    void onPreiodicTick(int32_t);
     bool canHeat();
     void incTicks(bool);
     bool toggleHeater();
@@ -24,6 +27,8 @@ public:
         heaterPulseReady = false;
         heaterDelayTicks = 34;
         tempVoltage = 0;
+        targetTempVoltage = 0;
+        tempVelocity = 0;
     }
 
     ~OvenState()

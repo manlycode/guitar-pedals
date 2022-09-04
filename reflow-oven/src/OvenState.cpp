@@ -4,6 +4,12 @@ void OvenState::onHeaterPulseReady() {
     heaterPulseReady = true;
 }
 
+void OvenState::onPreiodicTick(int32_t newTempVoltage) {
+    tempVelocity = newTempVoltage - tempVoltage;
+    tempVoltage = newTempVoltage;
+
+}
+
 bool OvenState::canHeat() {
     return heaterPulseReady && heaterEnabled;
 }

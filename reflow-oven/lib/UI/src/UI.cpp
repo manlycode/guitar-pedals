@@ -36,6 +36,7 @@ void UI::clearView() {
 
 void UI::renderSplashScreen() {
     float tempVoltage = ovenState->tempVoltage * 0.0008;
+    float velocity = ovenState->tempVelocity * 0.0008;
 
     clearView();
     oled->setTextColor(WHITE);
@@ -44,6 +45,7 @@ void UI::renderSplashScreen() {
     oled->printlnf(F("Delay %d"), ovenState->heaterDelayTicks);
     oled->printlnf(F("Heater: %s"),  ovenState->heaterEnabled ? F("On") : F("Off"));
     oled->printlnf(F("Temp: %0.3fV"),  tempVoltage);
+    oled->printlnf(F("Delta: %0.3fV"),  velocity);
     oled->display();
     delay(1);
 }

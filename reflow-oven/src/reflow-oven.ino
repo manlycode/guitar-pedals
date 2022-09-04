@@ -51,15 +51,15 @@ void phaseAngleZero(){
   }
   noInterrupts();
   digitalWriteFast(HEATER_TOP, false);
-  digitalWriteFast(HEATER_MIDDLE, false);
+  // digitalWriteFast(HEATER_MIDDLE, false);
   digitalWriteFast(HEATER_BOTTOM, false);
   delayMicroseconds(50*ovenState.heaterDelayTicks);
   digitalWriteFast(HEATER_TOP, true);
-  digitalWriteFast(HEATER_MIDDLE, true);
+  // digitalWriteFast(HEATER_MIDDLE, true);
   digitalWriteFast(HEATER_BOTTOM, true);
   delayMicroseconds(800);
   digitalWriteFast(HEATER_TOP, false);
-  digitalWriteFast(HEATER_MIDDLE, false);
+  // digitalWriteFast(HEATER_MIDDLE, false);
   digitalWriteFast(HEATER_BOTTOM, false);
   interrupts();
 }
@@ -67,11 +67,13 @@ void phaseAngleZero(){
 void doButtonPress(){
   if (ovenState.toggleHeater()) {
     timerPulseReady.start();
+    digitalWriteFast(DC_FAN_ENABLE, true);
   } else {
     noInterrupts();
     digitalWriteFast(HEATER_TOP, false);
     digitalWriteFast(HEATER_MIDDLE, false);
     digitalWriteFast(HEATER_BOTTOM, false);
+    digitalWriteFast(DC_FAN_ENABLE, false);
     interrupts();  
   }
   
@@ -87,7 +89,8 @@ void doRotate(){
 }
 
 void doPeriodic(){
-  ovenState.tempVoltage = analogRead(TEMP_NTC);
+  int32_t newTemp = analogRead(TEMP_NTC);
+  ovenState.onPreiodicTick(newTemp);
   ui.markDirty();
 }
 
@@ -111,7 +114,9 @@ void setup()   {
   pinMode(HEATER_MIDDLE, OUTPUT);
   pinMode(HEATER_BOTTOM, OUTPUT);
 
+  pinMode(DC_FAN_ENABLE, OUTPUT);
   pinMode(TEMP_NTC, INPUT);
+  doPeriodic();
 
   ui.setup();
   ui.render();
