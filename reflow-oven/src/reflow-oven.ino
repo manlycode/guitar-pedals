@@ -7,6 +7,7 @@ SYSTEM_MODE(SEMI_AUTOMATIC);
 /* ------------------------------------
 Pin definitions
 ------------------------------------ */
+#define PERIODIC_DELAY 250
 // Lefthand Pins
 #define TEMP_NTC A0
 #define DC_FAN_ENABLE A1
@@ -36,7 +37,7 @@ Adafruit_SSD1306 oled(OLED_RESET);
 
 OvenState ovenState;
 Timer timerPulseReady(10000, &OvenState::onHeaterPulseReady, ovenState, true);
-Timer periodic(1000, doPeriodic);
+Timer periodic(PERIODIC_DELAY, doPeriodic);
 
 
 UI ui(&oled, &ovenState);
@@ -49,31 +50,34 @@ void phaseAngleZero(){
   if (!ovenState.canHeat()) {
     return;
   }
+
   noInterrupts();
-  digitalWriteFast(HEATER_TOP, false);
-  // digitalWriteFast(HEATER_MIDDLE, false);
-  digitalWriteFast(HEATER_BOTTOM, false);
-  delayMicroseconds(50*ovenState.heaterDelayTicks);
-  digitalWriteFast(HEATER_TOP, true);
-  // digitalWriteFast(HEATER_MIDDLE, true);
-  digitalWriteFast(HEATER_BOTTOM, true);
-  delayMicroseconds(800);
-  digitalWriteFast(HEATER_TOP, false);
-  // digitalWriteFast(HEATER_MIDDLE, false);
-  digitalWriteFast(HEATER_BOTTOM, false);
+  pinResetFast(HEATER_TOP);
+  // pinResetFast(HEATER_MIDDLE);
+  pinResetFast(HEATER_BOTTOM);
+
+  delayMicroseconds(100*ovenState.heaterDelayTicks);
+  pinSetFast(HEATER_TOP);
+  // pinSetFast(HEATER_MIDDLE);
+  pinSetFast(HEATER_BOTTOM);
+
+  delayMicroseconds(250);
+  pinResetFast(HEATER_TOP);
+  // pinResetFast(HEATER_MIDDLE);
+  pinResetFast(HEATER_BOTTOM);
   interrupts();
 }
 
 void doButtonPress(){
   if (ovenState.toggleHeater()) {
     timerPulseReady.start();
-    digitalWriteFast(DC_FAN_ENABLE, true);
+    pinSetFast(DC_FAN_ENABLE);
   } else {
     noInterrupts();
-    digitalWriteFast(HEATER_TOP, false);
-    digitalWriteFast(HEATER_MIDDLE, false);
-    digitalWriteFast(HEATER_BOTTOM, false);
-    digitalWriteFast(DC_FAN_ENABLE, false);
+    pinResetFast(HEATER_TOP);
+    pinResetFast(HEATER_MIDDLE);
+    pinResetFast(HEATER_BOTTOM);
+    pinResetFast(DC_FAN_ENABLE);
     interrupts();  
   }
   
@@ -89,9 +93,11 @@ void doRotate(){
 }
 
 void doPeriodic(){
+  noInterrupts();
   int32_t newTemp = analogRead(TEMP_NTC);
   ovenState.onPreiodicTick(newTemp);
   ui.markDirty();
+  interrupts();
 }
 
 /* ------------------------------------

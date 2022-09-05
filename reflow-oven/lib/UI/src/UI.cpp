@@ -36,15 +36,17 @@ void UI::clearView() {
 
 void UI::renderSplashScreen() {
     float tempVoltage = ovenState->tempVoltage * 0.0008;
-    float velocity = ovenState->tempVelocity * 0.0008;
+    float target = ovenState->targetTempVoltage * 0.0008;
+    float velocity = (ovenState->tempVelocity * 0.0008)/0.25;
 
     clearView();
     oled->setTextColor(WHITE);
     oled->setTextSize(1);
     oled->setCursor(0, VIEW_Y);
     oled->printlnf(F("Delay %d"), ovenState->heaterDelayTicks);
-    oled->printlnf(F("Heater: %s"),  ovenState->heaterEnabled ? F("On") : F("Off"));
+    oled->printlnf(F("Heater: %s:%s:%s"),  ovenState->heaterEnabled ? F("On") : F("Off"), ovenState->heaterPulseReady ? F("On") : F("Off"), ovenState->tooCool() ? F("On") : F("Off"));
     oled->printlnf(F("Temp: %0.3fV"),  tempVoltage);
+    oled->printlnf(F("Target: %0.3fV"),  target);
     oled->printlnf(F("Delta: %0.3fV"),  velocity);
     oled->display();
     delay(1);
