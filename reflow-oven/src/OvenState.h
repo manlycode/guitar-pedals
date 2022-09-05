@@ -5,12 +5,14 @@
 class OvenState
 {
 private:
-    
 
 public:
     uint8_t heaterDelayTicks;
     bool heaterEnabled;
     bool heaterPulseReady;
+    bool tooCool();    
+
+
     int32_t tempVoltage;
     int32_t targetTempVoltage;
     int32_t tempVelocity;

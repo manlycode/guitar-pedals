@@ -7,21 +7,32 @@ void OvenState::onHeaterPulseReady() {
 void OvenState::onPreiodicTick(int32_t newTempVoltage) {
     tempVelocity = newTempVoltage - tempVoltage;
     tempVoltage = newTempVoltage;
-
+}
+bool OvenState::tooCool() {
+    return tempVoltage < targetTempVoltage;
 }
 
 bool OvenState::canHeat() {
-    return heaterPulseReady && heaterEnabled;
+    return heaterPulseReady && heaterEnabled && tooCool();
 }
 
 void OvenState::incTicks(bool increment) {
+    // if (increment) {
+    //     if (heaterDelayTicks < 108) {
+    //         heaterDelayTicks++;
+    //     }
+    // } else {
+    //     if (heaterDelayTicks > 0) {
+    //         heaterDelayTicks--;
+    //     }
+    // }
     if (increment) {
-        if (heaterDelayTicks < 34) {
-            heaterDelayTicks++;
+        if (targetTempVoltage < 4095) {
+            targetTempVoltage = targetTempVoltage + 125;
         }
     } else {
-        if (heaterDelayTicks > 0) {
-            heaterDelayTicks--;
+        if (targetTempVoltage > 0) {
+            targetTempVoltage = targetTempVoltage - 125;
         }
     }
 }
