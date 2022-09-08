@@ -45,9 +45,11 @@ void UI::renderSplashScreen() {
     oled->setCursor(0, VIEW_Y);
     oled->printlnf(F("Delay %d"), ovenState->heaterDelayTicks);
     oled->printlnf(F("Heater: %s:%s:%s"),  ovenState->heaterEnabled ? F("On") : F("Off"), ovenState->heaterPulseReady ? F("On") : F("Off"), ovenState->tooCool() ? F("On") : F("Off"));
-    oled->printlnf(F("Temp: %0.3fV"),  tempVoltage);
-    oled->printlnf(F("Target: %0.3fV"),  target);
-    oled->printlnf(F("Delta: %0.3fV"),  velocity);
+    oled->printlnf(F("Reading: %f"), thermistor->readingInVolts());
+    oled->printlnf(F("Resistance: %f"), thermistor->calculateResistance());
+    oled->printlnf(F("Temp: %fF"), thermistor->readTempF());
+
+
     oled->display();
     delay(1);
 }
