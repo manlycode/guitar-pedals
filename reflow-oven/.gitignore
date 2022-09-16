@@ -1,2 +1,6 @@
 target
 src/reflow-oven.cpp
+*.o
+*.a
+*.dsym
+lib/NTCCalculator/tests/testNTCCalculator

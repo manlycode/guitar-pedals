@@ -27,6 +27,7 @@ double Thermistor::calculateResistance() const
 
 double Thermistor::calculateTempKelvin() const
 {
+    // 1/T = 1/TO + (1/β) ⋅ ln (R/RO)
     double steinhart = (1.0 / (TEMP_NOMINAL - ABS_ZERO)) + (1.0 / beta) * log(calculateResistance() / RESISTANCE_NOMINAL);
     double kelvin = 1.0 / steinhart;
     return kelvin;
