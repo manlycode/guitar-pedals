@@ -2,7 +2,7 @@
 SYSTEM_MODE(SEMI_AUTOMATIC);
 
 #include "Encoder.h"
-#include "UI.h"
+#include "UI/UI.h"
 // #include "OvenStateLegacy.h"
 #include "OvenState.h"
 #include "Thermistor.h"
