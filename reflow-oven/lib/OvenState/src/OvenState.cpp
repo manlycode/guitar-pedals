@@ -92,6 +92,20 @@ void OvenState::onHeaterReady() {
     _heaterPulseReady = true;
 }
 
+void OvenState::onIncTargetTemp(bool increment) {
+    if (increment) {
+        if (_targetTemp < OVEN_STATE_MAX_TEMP)
+        {
+            _targetTemp += OVEN_STATE_TEMP_INCREMENT;
+        }
+    } else {
+        if (_targetTemp > OVEN_STATE_MIN_TEMP) {
+            _targetTemp -= OVEN_STATE_TEMP_INCREMENT;
+        }
+    }
+    
+}
+
 #pragma endregion
 
 

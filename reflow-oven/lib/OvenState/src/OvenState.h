@@ -1,6 +1,10 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <iostream>
+
+#define OVEN_STATE_MIN_TEMP 70.0
+#define OVEN_STATE_MAX_TEMP 500.0
+#define OVEN_STATE_TEMP_INCREMENT 10.0
 class OvenState
 {
 private:
@@ -19,6 +23,7 @@ private:
     // Heater State
     bool _heaterEnabled;
     bool _heaterPulseReady;
+
 
 public:
     // ---------------------------------------
@@ -50,16 +55,17 @@ public:
     #pragma region Callbacks
     void update(size_t newTime, double newTemp);
     void setup(size_t newTime, double newTemp);
+
     void onToggleHeater();
     void onHeaterReady();
+    void onIncTargetTemp(bool);
+
     #pragma endregion
 
-    
-    
     OvenState()
     {
         _temp = 0.0;
-        _targetTemp = 0.0;
+        _targetTemp = 70.00;
         _predictedTemp = 0.0;
         _timestamp = 0;
         _velocity = 0.0;

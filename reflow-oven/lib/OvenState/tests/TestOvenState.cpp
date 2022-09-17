@@ -214,4 +214,38 @@ SUITE(OvenState)
     CHECK_EQUAL(84.0, state.predictedTemp());
     CHECK_EQUAL(true, state.canHeat());
   }
+
+  TEST(OnIncTargetTemp) {
+    OvenState state = OvenState();
+    state.setup(0, 72.0);
+    CHECK_EQUAL(70.0, state.targetTemp());
+
+    // Does increment/decrement work?
+    state.onIncTargetTemp(true);
+    CHECK_EQUAL(80.0, state.targetTemp());
+    state.onIncTargetTemp(false);
+    CHECK_EQUAL(70.0, state.targetTemp());
+    
+    // Test upper bounds
+    state.setTargetTemp(OVEN_STATE_MAX_TEMP);
+    CHECK_EQUAL(OVEN_STATE_MAX_TEMP, state.targetTemp());
+    state.onIncTargetTemp(true);
+    CHECK_EQUAL(OVEN_STATE_MAX_TEMP, state.targetTemp());
+
+    // Test upper bounds
+    state.setTargetTemp(OVEN_STATE_MAX_TEMP);
+    CHECK_EQUAL(OVEN_STATE_MAX_TEMP, state.targetTemp());
+    state.onIncTargetTemp(true);
+    CHECK_EQUAL(OVEN_STATE_MAX_TEMP, state.targetTemp());
+    state.onIncTargetTemp(false);
+    CHECK_EQUAL(OVEN_STATE_MAX_TEMP-OVEN_STATE_TEMP_INCREMENT, state.targetTemp());
+
+    // Test lower bounds
+    state.setTargetTemp(OVEN_STATE_MIN_TEMP);
+    CHECK_EQUAL(OVEN_STATE_MIN_TEMP, state.targetTemp());
+    state.onIncTargetTemp(false);
+    CHECK_EQUAL(OVEN_STATE_MIN_TEMP, state.targetTemp());
+    state.onIncTargetTemp(true);
+    CHECK_EQUAL(OVEN_STATE_MIN_TEMP+OVEN_STATE_TEMP_INCREMENT, state.targetTemp());
+  }
 }
