@@ -67,6 +67,8 @@ void OvenState::update(size_t newTime, double newTemp)
         _velocity = deltaTemp/deltaTime;
         _acceleration = double((_velocity - _prevVelocity))/deltaTime;   
     }
+
+    _predictedTemp = _temp + _velocity;
 }
 
 #pragma endregion

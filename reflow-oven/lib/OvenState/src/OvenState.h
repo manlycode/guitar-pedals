@@ -8,6 +8,7 @@ private:
 
     // Temperatures
     double _temp;
+    double _predictedTemp;
     double _targetTemp;
     double _velocity;
     double _prevVelocity;
@@ -20,6 +21,7 @@ public:
     #pragma region Getters
 
     double temp();
+    double predictedTemp();
     double velocity();
     double acceleration();
     double targetTemp();
@@ -48,6 +50,7 @@ public:
     {
         _temp = 0.0;
         _targetTemp = 0.0;
+        _predictedTemp = 0.0;
         _timestamp = 0;
         _velocity = 0.0;
         _prevVelocity = 0.0;
