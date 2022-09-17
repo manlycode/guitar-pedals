@@ -13,7 +13,7 @@ testlib     = UnitTest++
 testlibpath = $(testlibdir)/lib$(testlib).a
 testrunner  = tests/Main.cpp
 
-objects = src/NTCCalc.o
+objects = src/OvenState.o
 
 testobjects = tests/TestOvenState.o
 
