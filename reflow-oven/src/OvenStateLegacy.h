@@ -1,5 +1,5 @@
-#ifndef OVEN_STATE_h
-#define OVEN_STATE_h
+#ifndef OVEN_STATE_LEGACY_h
+#define OVEN_STATE_LEGACY_h
 #include "application.h"
 
 class OvenStateLegacy

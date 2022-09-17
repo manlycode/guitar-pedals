@@ -37,6 +37,13 @@ bool OvenState::canHeat() {
     return _heaterPulseReady && _heaterEnabled && !isTooHot();
 }
 
+bool OvenState::heaterEnabled() {
+    return _heaterEnabled;
+}
+bool OvenState::pulseReady() {
+    return _heaterPulseReady;
+}
+
 #pragma endregion
 
 // ---------------------------------------

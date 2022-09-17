@@ -5,8 +5,8 @@
 #include "application.h"
 
 #define ADC_MAX 4096.0
-#define TEMP_NOMINAL 25.2
-#define RESISTANCE_NOMINAL 216000.0
+#define TEMP_NOMINAL 30.6
+#define RESISTANCE_NOMINAL 194000.0
 
 #define VIN 3.17
 #define ANALOG_REF 3.3

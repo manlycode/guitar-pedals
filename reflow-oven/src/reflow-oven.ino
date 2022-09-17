@@ -3,7 +3,8 @@ SYSTEM_MODE(SEMI_AUTOMATIC);
 
 #include "Encoder.h"
 #include "UI.h"
-#include "OvenStateLegacy.h"
+// #include "OvenStateLegacy.h"
+#include "OvenState.h"
 #include "Thermistor.h"
 /* ------------------------------------
 Pin definitions
@@ -36,16 +37,14 @@ SerialLogHandler logger;
 Encoder encoder(ENCODER_B, ENCODER_A);
 Adafruit_SSD1306 oled(OLED_RESET);
 
-OvenStateLegacy ovenState;
-Timer timerPulseReady(10000, &OvenStateLegacy::onHeaterPulseReady, ovenState, true);
-Timer periodic(PERIODIC_DELAY, doPeriodic);
-Thermistor ntc(TEMP_NTC, 3892.0, 24000.0);
+OvenState ovenState;
+Timer timerPulseReady(8000, &OvenState::onHeaterReady, ovenState, true);
+// Timer periodic(PERIODIC_DELAY, doPeriodic);
+Thermistor ntc(TEMP_NTC, 4233.27, 24000.0);
 
 UI ui(&oled, &ovenState, &ntc);
 
 long oldPosition  = -999;
-bool heaterState = 0;
-
 
 void phaseAngleZero(){
   if (!ovenState.canHeat()) {
@@ -57,12 +56,12 @@ void phaseAngleZero(){
   // pinResetFast(HEATER_MIDDLE);
   pinResetFast(HEATER_BOTTOM);
 
-  delayMicroseconds(100*ovenState.heaterDelayTicks);
+  delayMicroseconds(OVEN_STATE_HEATER_PULSE_DELAY_MICROS);
   pinSetFast(HEATER_TOP);
   // pinSetFast(HEATER_MIDDLE);
   pinSetFast(HEATER_BOTTOM);
 
-  delayMicroseconds(250);
+  delayMicroseconds(1000);
   pinResetFast(HEATER_TOP);
   // pinResetFast(HEATER_MIDDLE);
   pinResetFast(HEATER_BOTTOM);
@@ -70,7 +69,8 @@ void phaseAngleZero(){
 }
 
 void doButtonPress(){
-  if (ovenState.toggleHeater()) {
+  bool heaterEnabled = ovenState.onToggleHeater();
+  if (heaterEnabled) {
     timerPulseReady.start();
     pinSetFast(DC_FAN_ENABLE);
   } else {
@@ -82,24 +82,24 @@ void doButtonPress(){
     interrupts();  
   }
   
-  digitalWriteFast(HEATER_RELAY_ENABLE, ovenState.heaterEnabled);
+  digitalWriteFast(HEATER_RELAY_ENABLE, heaterEnabled);
   ui.markDirty();
 }
 
 void doRotate(){
   int32_t value = encoder.read();
-  ovenState.incTicks(value < oldPosition);
+  ovenState.onIncTargetTemp(value < oldPosition);
   oldPosition = value;
   ui.markDirty();
 }
 
-void doPeriodic(){
-  noInterrupts();
-  int32_t newTemp = analogRead(TEMP_NTC);
-  ovenState.onPreiodicTick(newTemp);
-  ui.markDirty();
-  interrupts();
-}
+// void doPeriodic(){
+//   noInterrupts();
+//   int32_t newTemp = analogRead(TEMP_NTC);
+//   ovenState.onPreiodicTick(newTemp);
+//   ui.markDirty();
+//   interrupts();
+// }
 
 /* ------------------------------------
 CODE
@@ -123,7 +123,7 @@ void setup()   {
 
   pinMode(DC_FAN_ENABLE, OUTPUT);
   pinMode(TEMP_NTC, INPUT);
-  doPeriodic();
+  // doPeriodic();
 
   ui.setup();
   ui.render();
@@ -132,7 +132,7 @@ void setup()   {
   attachInterrupt(ENCODER_B, doRotate, FALLING);
   attachInterrupt(PHASE_ANGLE_ZERO, phaseAngleZero, RISING);
   interrupts();
-  periodic.start();
+  // periodic.start();
   // Serial.printlnf("starting...");
   // Particle.connect();
 }
@@ -140,7 +140,9 @@ void setup()   {
 
 void loop() {
   ntc.readADC();
+  ovenState.update(millis(), ntc.readTempF());
   ui.markDirty();
+  delay(1);
   ui.render();
   delay(1);
 }

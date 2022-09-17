@@ -7,5 +7,6 @@
     },
     "particle.firmwareVersion": "5.0.0",
     "particle.targetPlatform": "argon",
-    "particle.targetDevice": "e00fce685fc9d96a2913b1e9"
+    "particle.targetDevice": "e00fce685fc9d96a2913b1e9",
+    "C_Cpp.dimInactiveRegions": false
 }

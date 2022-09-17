@@ -1,3 +1,5 @@
+#ifndef OVEN_STATE_h
+#define OVEN_STATE_h
 #include <stdint.h>
 #include <stdlib.h>
 #include <iostream>
@@ -38,6 +40,9 @@ public:
     double acceleration();
     double targetTemp();
     size_t timestamp();
+
+    bool heaterEnabled();
+    bool pulseReady();
 
     bool isTooHot();
     bool canHeat();
@@ -82,3 +87,4 @@ public:
 };
 
 
+#endif

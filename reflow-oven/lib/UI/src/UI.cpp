@@ -35,21 +35,16 @@ void UI::clearView() {
 }
 
 void UI::renderSplashScreen() {
-    float tempVoltage = ovenState->tempVoltage * 0.0008;
-    float target = ovenState->targetTempVoltage * 0.0008;
-    float velocity = (ovenState->tempVelocity * 0.0008)/0.25;
-
     clearView();
     oled->setTextColor(WHITE);
     oled->setTextSize(1);
     oled->setCursor(0, VIEW_Y);
-    oled->printlnf(F("Delay %d"), ovenState->heaterDelayTicks);
-    oled->printlnf(F("Heater: %s:%s:%s"),  ovenState->heaterEnabled ? F("On") : F("Off"), ovenState->heaterPulseReady ? F("On") : F("Off"), ovenState->tooCool() ? F("On") : F("Off"));
-    oled->printlnf(F("Reading: %f"), thermistor->readingInVolts());
-    oled->printlnf(F("Resistance: %f"), thermistor->calculateResistance());
-    oled->printlnf(F("Temp: %fF"), thermistor->readTempF());
-
-
+    
+    oled->printlnf(F("T:%0.1fF  (o): %0.1fF"), ovenState->temp(), ovenState->targetTemp());
+    oled->printlnf(F("Next T: %0.1fF"), ovenState->predictedTemp());
+    oled->printlnf(F("V: %+0.2f"), ovenState->velocity());
+    oled->printlnf(F("A: %+0.2f"), ovenState->acceleration());
+    oled->printlnf(F("Heater: %s:%s:%s"),  ovenState->heaterEnabled() ? F("On") : F("Off"), ovenState->pulseReady() ? F("On") : F("Off"), ovenState->canHeat() ? F("On") : F("Off"));
     oled->display();
     delay(1);
 }
