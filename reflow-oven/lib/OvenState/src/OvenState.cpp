@@ -8,6 +8,10 @@ double OvenState::temp() {
     return _temp;
 }
 
+double OvenState::predictedTemp() {
+    return _predictedTemp;
+}
+
 double OvenState::targetTemp() {
     return _targetTemp;
 }
