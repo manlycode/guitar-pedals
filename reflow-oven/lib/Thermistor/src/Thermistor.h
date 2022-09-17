@@ -8,8 +8,8 @@
 #define TEMP_NOMINAL 30.6
 #define RESISTANCE_NOMINAL 194000.0
 
-#define VIN 3.17
-#define ANALOG_REF 3.3
+#define VIN 3.2
+#define ANALOG_REF 3.0
 #define VOLTS_PER_TICK (ANALOG_REF/ADC_MAX)
 #define SAMPLES 10
 #define SAMPLE_DELAY 10
