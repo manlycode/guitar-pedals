@@ -3,7 +3,7 @@
 
 SUITE(NTCCalc)
 {
-  TEST(MyIntReturnsThree)
+  TEST(CalculateResistance)
   {
     NTCCalc calc;
     uint32_t result = calc.myInt();

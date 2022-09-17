@@ -1,22 +1,22 @@
-#include "OvenState.h"
+#include "OvenStateLegacy.h"
 
-void OvenState::onHeaterPulseReady() {
+void OvenStateLegacy::onHeaterPulseReady() {
     heaterPulseReady = true;
 }
 
-void OvenState::onPreiodicTick(int32_t newTempVoltage) {
+void OvenStateLegacy::onPreiodicTick(int32_t newTempVoltage) {
     tempVelocity = newTempVoltage - tempVoltage;
     tempVoltage = newTempVoltage;
 }
-bool OvenState::tooCool() {
+bool OvenStateLegacy::tooCool() {
     return tempVoltage < targetTempVoltage;
 }
 
-bool OvenState::canHeat() {
+bool OvenStateLegacy::canHeat() {
     return heaterPulseReady && heaterEnabled && tooCool();
 }
 
-void OvenState::incTicks(bool increment) {
+void OvenStateLegacy::incTicks(bool increment) {
     // if (increment) {
     //     if (heaterDelayTicks < 108) {
     //         heaterDelayTicks++;
@@ -37,7 +37,7 @@ void OvenState::incTicks(bool increment) {
     }
 }
 
-bool OvenState::toggleHeater() {
+bool OvenStateLegacy::toggleHeater() {
     heaterEnabled = !heaterEnabled;
     if (!heaterEnabled){
         heaterPulseReady = false;

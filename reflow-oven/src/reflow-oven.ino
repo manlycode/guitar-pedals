@@ -3,7 +3,7 @@ SYSTEM_MODE(SEMI_AUTOMATIC);
 
 #include "Encoder.h"
 #include "UI.h"
-#include "OvenState.h"
+#include "OvenStateLegacy.h"
 #include "Thermistor.h"
 /* ------------------------------------
 Pin definitions
@@ -36,8 +36,8 @@ SerialLogHandler logger;
 Encoder encoder(ENCODER_B, ENCODER_A);
 Adafruit_SSD1306 oled(OLED_RESET);
 
-OvenState ovenState;
-Timer timerPulseReady(10000, &OvenState::onHeaterPulseReady, ovenState, true);
+OvenStateLegacy ovenState;
+Timer timerPulseReady(10000, &OvenStateLegacy::onHeaterPulseReady, ovenState, true);
 Timer periodic(PERIODIC_DELAY, doPeriodic);
 Thermistor ntc(TEMP_NTC, 3892.0, 24000.0);
 
