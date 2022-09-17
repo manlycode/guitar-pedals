@@ -17,6 +17,10 @@ double OvenState::velocity()
     return _velocity;
 }
 
+double OvenState::acceleration()
+{
+    return _acceleration;
+}
 size_t OvenState::timestamp() {
     return _timestamp;
 }
@@ -39,15 +43,30 @@ void OvenState::setTargetTemp(double newTemp)
 #pragma region Callbacks
 void OvenState::setup(size_t newTime, double newTemp)
 {
-    update(newTime, newTemp);
-    update(newTime, newTemp);
+    _timestamp = newTime;
+    _temp = newTemp;
     
+    
+    update(newTime, newTemp);
 }
 
 void OvenState::update(size_t newTime, double newTemp)
 {
-    _temp = newTemp;
+    // Divide by 1000 to convert to seconds
+    double deltaTime = double(newTime - _timestamp)/1000.0;
+    double deltaTemp = newTemp - _temp;
+
     _timestamp = newTime;
+    _temp = newTemp;
+
+    _prevVelocity = _velocity;
+    if (deltaTime == 0.00) {
+        _velocity = 0.00;
+        _acceleration = 0.00;
+    } else {
+        _velocity = deltaTemp/deltaTime;
+        _acceleration = double((_velocity - _prevVelocity))/deltaTime;   
+    }
 }
 
 #pragma endregion

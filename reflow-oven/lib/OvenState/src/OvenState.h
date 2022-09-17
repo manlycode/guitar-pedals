@@ -1,17 +1,17 @@
 #include <stdint.h>
 #include <stdlib.h>
-
+#include <iostream>
 class OvenState
 {
 private:
     size_t _timestamp;
-    size_t _prevTimestamp;
 
     // Temperatures
     double _temp;
     double _targetTemp;
     double _velocity;
     double _prevVelocity;
+    double _acceleration;
 
 public:
     // ---------------------------------------
@@ -47,7 +47,11 @@ public:
     OvenState()
     {
         _temp = 0.0;
-        _timestamp = 0.0;
+        _targetTemp = 0.0;
+        _timestamp = 0;
+        _velocity = 0.0;
+        _prevVelocity = 0.0;
+        _acceleration = 0.0;
     }
 
     ~OvenState()
