@@ -29,6 +29,10 @@ size_t OvenState::timestamp() {
     return _timestamp;
 }
 
+bool OvenState::isTooHot() {
+    return _predictedTemp > _targetTemp;
+}
+
 #pragma endregion
 
 // ---------------------------------------

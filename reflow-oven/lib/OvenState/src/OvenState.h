@@ -27,6 +27,7 @@ public:
     double targetTemp();
     size_t timestamp();
 
+    bool isTooHot();
     #pragma endregion
 
     // ---------------------------------------

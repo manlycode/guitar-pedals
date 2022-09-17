@@ -146,4 +146,22 @@ SUITE(OvenState)
     CHECK_EQUAL(50.0, state.acceleration());
     CHECK_EQUAL(100.0, state.predictedTemp());
   }
+
+  TEST(IsTooHot) {
+    OvenState state = OvenState();
+    state.setup(0, 72.0);
+    state.setTargetTemp(80.0);
+
+    state.update(1000, 72.0);
+    CHECK_EQUAL(72.0, state.predictedTemp());
+    CHECK_EQUAL(false, state.isTooHot());
+
+    state.update(2000,	80.00);
+    CHECK_EQUAL(88.0, state.predictedTemp());
+    CHECK_EQUAL(true, state.isTooHot());
+
+    state.update(3000,	82.00);
+    CHECK_EQUAL(84.0, state.predictedTemp());
+    CHECK_EQUAL(true, state.isTooHot());
+  }
 }
