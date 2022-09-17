@@ -10,9 +10,15 @@ private:
     double _temp;
     double _predictedTemp;
     double _targetTemp;
+
+    // Telemetry
     double _velocity;
     double _prevVelocity;
     double _acceleration;
+
+    // Heater State
+    bool _heaterEnabled;
+    bool _heaterPulseReady;
 
 public:
     // ---------------------------------------
@@ -28,6 +34,7 @@ public:
     size_t timestamp();
 
     bool isTooHot();
+    bool canHeat();
     #pragma endregion
 
     // ---------------------------------------
@@ -43,6 +50,8 @@ public:
     #pragma region Callbacks
     void update(size_t newTime, double newTemp);
     void setup(size_t newTime, double newTemp);
+    void onToggleHeater();
+    void onHeaterReady();
     #pragma endregion
 
     
@@ -56,6 +65,8 @@ public:
         _velocity = 0.0;
         _prevVelocity = 0.0;
         _acceleration = 0.0;
+        _heaterEnabled = false;
+        _heaterPulseReady = false;
     }
 
     ~OvenState()

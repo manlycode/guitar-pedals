@@ -30,7 +30,11 @@ size_t OvenState::timestamp() {
 }
 
 bool OvenState::isTooHot() {
-    return _predictedTemp > _targetTemp;
+    return _predictedTemp >= _targetTemp;
+}
+
+bool OvenState::canHeat() {
+    return _heaterPulseReady && _heaterEnabled && !isTooHot();
 }
 
 #pragma endregion
@@ -77,6 +81,15 @@ void OvenState::update(size_t newTime, double newTemp)
     }
 
     _predictedTemp = _temp + _velocity;
+}
+
+void OvenState::onToggleHeater() {
+    _heaterPulseReady = false;
+    _heaterEnabled = !_heaterEnabled;
+}
+
+void OvenState::onHeaterReady() {
+    _heaterPulseReady = true;
 }
 
 #pragma endregion

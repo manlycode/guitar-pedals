@@ -164,4 +164,54 @@ SUITE(OvenState)
     CHECK_EQUAL(84.0, state.predictedTemp());
     CHECK_EQUAL(true, state.isTooHot());
   }
+
+
+  TEST(CanHeatHeaterDisabledPulseNotReady) {
+    OvenState state = OvenState();
+    state.setup(0, 72.0);
+    state.setTargetTemp(88.0);
+
+    // Heater Not Enabled
+    state.update(1000, 72.0);
+    CHECK_EQUAL(72.0, state.predictedTemp());
+    CHECK_EQUAL(false, state.canHeat());
+
+    state.update(2000,	80.00);
+    CHECK_EQUAL(88.0, state.predictedTemp());
+    CHECK_EQUAL(false, state.canHeat());
+
+    state.update(3000,	82.00);
+    CHECK_EQUAL(84.0, state.predictedTemp());
+    CHECK_EQUAL(false, state.canHeat());
+
+    state.onToggleHeater();
+    state.onHeaterReady();
+    CHECK_EQUAL(true, state.canHeat());
+  }
+
+  TEST(CanHeatHeaterDisabledPulseIsReady) {
+    OvenState state = OvenState();
+    state.setup(0, 72.0);
+    state.setTargetTemp(88.0);
+    CHECK_EQUAL(72.0, state.predictedTemp());
+
+    state.onToggleHeater();
+    CHECK_EQUAL(false, state.canHeat());
+
+    state.onHeaterReady();
+    CHECK_EQUAL(true, state.canHeat());
+
+    // _heaterEnabled = true, _heaterPulseReady = true
+    state.update(1000, 72.0);
+    CHECK_EQUAL(72.0, state.predictedTemp());
+    CHECK_EQUAL(true, state.canHeat());
+
+    state.update(2000,	80.00);
+    CHECK_EQUAL(88.0, state.predictedTemp());
+    CHECK_EQUAL(false, state.canHeat());
+
+    state.update(3000,	82.00);
+    CHECK_EQUAL(84.0, state.predictedTemp());
+    CHECK_EQUAL(true, state.canHeat());
+  }
 }
