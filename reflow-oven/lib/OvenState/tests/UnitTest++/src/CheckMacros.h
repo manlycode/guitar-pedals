@@ -56,6 +56,18 @@
         } \
     } while (0)
 
+#define CHECK_TIMESTAMP(expected, actual) \
+    do \
+    { \
+        try { \
+            UnitTest::CheckEqual(*UnitTest::CurrentTest::Results(), size_t(expected), actual, UnitTest::TestDetails(*UnitTest::CurrentTest::Details(), __LINE__)); \
+        } \
+        catch (...) { \
+            UnitTest::CurrentTest::Results()->OnTestFailure(UnitTest::TestDetails(*UnitTest::CurrentTest::Details(), __LINE__), \
+                    "Unhandled exception in CHECK_EQUAL(" #expected ", " #actual ")"); \
+        } \
+    } while (0)
+    
 #define CHECK_CLOSE(expected, actual, tolerance) \
     do \
     { \
