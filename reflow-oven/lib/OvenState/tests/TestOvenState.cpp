@@ -165,6 +165,14 @@ SUITE(OvenState)
     CHECK_EQUAL(true, state.isTooHot());
   }
 
+  TEST(OnToggleHeater) {
+    OvenState state = OvenState();
+    state.setup(0, 72.0);
+
+    CHECK_EQUAL(true, state.onToggleHeater());
+    CHECK_EQUAL(false, state.onToggleHeater());
+  }
+
 
   TEST(CanHeatHeaterDisabledPulseNotReady) {
     OvenState state = OvenState();
@@ -195,7 +203,7 @@ SUITE(OvenState)
     state.setTargetTemp(88.0);
     CHECK_EQUAL(72.0, state.predictedTemp());
 
-    state.onToggleHeater();
+    CHECK_EQUAL(true, state.onToggleHeater());
     CHECK_EQUAL(false, state.canHeat());
 
     state.onHeaterReady();
@@ -225,12 +233,6 @@ SUITE(OvenState)
     CHECK_EQUAL(80.0, state.targetTemp());
     state.onIncTargetTemp(false);
     CHECK_EQUAL(70.0, state.targetTemp());
-    
-    // Test upper bounds
-    state.setTargetTemp(OVEN_STATE_MAX_TEMP);
-    CHECK_EQUAL(OVEN_STATE_MAX_TEMP, state.targetTemp());
-    state.onIncTargetTemp(true);
-    CHECK_EQUAL(OVEN_STATE_MAX_TEMP, state.targetTemp());
 
     // Test upper bounds
     state.setTargetTemp(OVEN_STATE_MAX_TEMP);

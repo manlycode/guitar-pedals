@@ -5,6 +5,7 @@
 #define OVEN_STATE_MIN_TEMP 70.0
 #define OVEN_STATE_MAX_TEMP 500.0
 #define OVEN_STATE_TEMP_INCREMENT 10.0
+#define OVEN_STATE_HEATER_PULSE_DELAY_MICROS 150
 class OvenState
 {
 private:
@@ -56,7 +57,7 @@ public:
     void update(size_t newTime, double newTemp);
     void setup(size_t newTime, double newTemp);
 
-    void onToggleHeater();
+    bool onToggleHeater();
     void onHeaterReady();
     void onIncTargetTemp(bool);
 

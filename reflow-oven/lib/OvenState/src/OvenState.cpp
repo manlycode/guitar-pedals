@@ -83,9 +83,10 @@ void OvenState::update(size_t newTime, double newTemp)
     _predictedTemp = _temp + _velocity;
 }
 
-void OvenState::onToggleHeater() {
+bool OvenState::onToggleHeater() {
     _heaterPulseReady = false;
     _heaterEnabled = !_heaterEnabled;
+    return _heaterEnabled;
 }
 
 void OvenState::onHeaterReady() {
