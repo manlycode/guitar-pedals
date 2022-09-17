@@ -2,14 +2,17 @@
 #define UI_h
 
 #include "application.h"
-#include "OvenState.h"
+#include "OvenStateLegacy.h"
 #include "Adafruit_SSD1306.h"
+#include "Thermistor.h"
+
 class UI
 {
 private:
     Adafruit_SSD1306* oled;
-    OvenState* ovenState;
-
+    OvenStateLegacy* ovenState;
+    Thermistor* thermistor;
+    
     void (UI::*renderView)();
     int32_t rotateVal;
     bool needsRender;
@@ -31,7 +34,7 @@ public:
     // Callbacks
     void markDirty();
 
-    UI(Adafruit_SSD1306* _oled, OvenState* _ovenState)
+    UI(Adafruit_SSD1306* _oled, OvenStateLegacy* _ovenState, Thermistor* _thermistor)
     {
         oled = _oled;
         // renderView = &UI::renderSplashScreen;
@@ -40,6 +43,7 @@ public:
         needsRender = true;
         heaterDelay = 34;
         ovenState = _ovenState;
+        thermistor = _thermistor;
     }
 
     ~UI()

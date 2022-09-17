@@ -2,7 +2,7 @@
 #define OVEN_STATE_h
 #include "application.h"
 
-class OvenState
+class OvenStateLegacy
 {
 private:
 
@@ -23,7 +23,7 @@ public:
     void incTicks(bool);
     bool toggleHeater();
 
-    OvenState()
+    OvenStateLegacy()
     {
         heaterEnabled = false;
         heaterPulseReady = false;
@@ -33,7 +33,7 @@ public:
         tempVelocity = 0;
     }
 
-    ~OvenState()
+    ~OvenStateLegacy()
     {
     }
 };
