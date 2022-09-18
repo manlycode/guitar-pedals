@@ -90,13 +90,21 @@ void OvenState::update(size_t newTime, double newTemp)
     _predictedTemp = _temp + _velocity;
 }
 
-bool OvenState::onToggleHeater() {
+bool OvenState::onToggleHeater(size_t timestamp) 
+{
+    timeline.schedule(timestamp, 8*1000, &OvenState::onHeaterReady, this);
     _heaterPulseReady = false;
     _heaterEnabled = !_heaterEnabled;
     return _heaterEnabled;
 }
 
+void OvenState::onPeriodic(size_t timestamp) 
+{
+    timeline.runScheduled(timestamp);
+}
+
 void OvenState::onHeaterReady() {
+
     _heaterPulseReady = true;
 }
 
