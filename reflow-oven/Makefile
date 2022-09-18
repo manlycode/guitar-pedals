@@ -13,8 +13,7 @@ testlib     = UnitTest++
 testlibpath = $(testlibdir)/lib$(testlib).a
 testrunner  = tests/Main.cpp
 
-objects = src/OvenState.o \
-			src/Timeline.o
+objects = src/OvenState.o
 
 testobjects = tests/TestOvenState.o \
 				tests/TestTimeline.o

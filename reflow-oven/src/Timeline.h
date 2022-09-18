@@ -21,9 +21,37 @@ private:
     timeline_callback<T> _timeline_callbacks[TIMELINE_SIZE];
     T* _instances[TIMELINE_SIZE];
 
-    void reset();
-    uint8_t firstOpenSlot();
-    void resetSlot(uint8_t);
+ 
+    void reset()
+    {
+        for (uint8_t i = 0; i < TIMELINE_SIZE; i++)
+        {
+            _deadlines[i] = NULL_DEADLINE;
+            _timeline_callbacks[i] = (timeline_callback<T>)NULL;
+        }
+    }
+
+    uint8_t firstOpenSlot()
+    {
+        for (uint8_t i = 0; i < TIMELINE_SIZE; i++)
+        {
+            if (_deadlines[i] == NULL_DEADLINE) {
+                return i;
+            }
+        }
+
+        return 1;
+    }
+
+    void resetSlot(uint8_t idx)
+    {
+        if (idx >= TIMELINE_SIZE) {
+            return;
+        }
+
+        _deadlines[idx] = NULL_DEADLINE;
+        _timeline_callbacks[idx] = (timeline_callback<T>)NULL;
+    }
 
 public:
     // ---------------------------------------
@@ -31,9 +59,31 @@ public:
     // ---------------------------------------
     #pragma region Getters
 
-    size_t getDeadline(uint8_t idx);
-    timeline_callback<T> getCallback(uint8_t idx);
-    T* getInstance(uint8_t idx);
+    size_t getDeadline(uint8_t idx)
+    {
+        if (idx >= TIMELINE_SIZE) {
+            return NULL_DEADLINE;
+        }
+        return _deadlines[idx];
+    }
+
+    timeline_callback<T> getCallback(uint8_t idx)
+    {
+        if (idx >= TIMELINE_SIZE) {
+            return NULL;
+        }
+
+        return _timeline_callbacks[idx];
+    }
+
+    T* getInstance(uint8_t idx)
+    {
+        if (idx >= TIMELINE_SIZE) {
+            return NULL;
+        }
+
+        return _instances[idx];
+    }
 
     #pragma endregion
 
@@ -41,8 +91,28 @@ public:
     // Setters
     // ---------------------------------------
     #pragma region Setters
-    uint8_t schedule(size_t timestamp, size_t executeIn, timeline_callback<T> callback, T* instance);
-    void runScheduled(size_t time);
+    uint8_t schedule(size_t timestamp, size_t executeIn, timeline_callback<T> callback, T* instance)
+    {
+        uint8_t idx = firstOpenSlot();
+        _deadlines[idx] = timestamp + executeIn;
+        _timeline_callbacks[idx] = callback;
+        return idx;
+    }
+
+    void runScheduled(size_t currentTime)
+    {
+        for (uint8_t i = 0; i < TIMELINE_SIZE; i++)
+        {
+            size_t deadline = getDeadline(i);
+            if ((deadline != NULL_DEADLINE) && (currentTime >= deadline))
+            {
+                // Call the callback
+                getCallback(i)();
+                resetSlot(i);
+            }
+        }
+    }
+
     #pragma endregion
 
     Timeline()

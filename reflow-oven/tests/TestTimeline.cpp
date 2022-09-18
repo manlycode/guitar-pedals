@@ -58,10 +58,13 @@ public:
   ~Incrementor() {}
 };
 
+typedef Timeline<Incrementor> IncTimeline;
 
-TEST_FIXTURE(Incrementor, Schedule)
+TEST_FIXTURE(IncTimeline, Schedule)
 {
-  timeline.schedule(0, 1000, &Incrementor::inc1, ptr());
+  Incrementor incrementor;
+  schedule(0, 1000, &Incrementor::inc1, &incrementor);
+  CHECK_EQUAL(2000, getDeadline(0));
 }
 
 
