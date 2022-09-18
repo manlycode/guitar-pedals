@@ -16,6 +16,14 @@
 #define OVEN_STATE_MAX_TEMP 500.0
 #define OVEN_STATE_TEMP_INCREMENT 10.0
 #define OVEN_STATE_HEATER_PULSE_DELAY_MICROS 300
+
+enum OvenMode {
+    Standby,
+    Startup,
+    Preheat,
+    Canceling
+};
+
 class OvenState
 {
 private:
@@ -30,18 +38,25 @@ private:
     double _velocity;
     double _prevVelocity;
     double _acceleration;
+    Timeline<OvenState> timeline;
 
+protected:
     // Heater State
     bool _heaterEnabled;
     bool _heaterPulseReady;
-
-    Timeline<OvenState> timeline;
+    OvenMode mode;
 
 public:
     // ---------------------------------------
     // Getters
     // ---------------------------------------
     #pragma region Getters
+
+    // Controls
+    bool heater_enable_control;
+    bool convection_control;
+    bool convection_speed_control;
+    bool dc_fan_control;
 
     double temp();
     double predictedTemp();
@@ -71,10 +86,21 @@ public:
     void update(size_t newTime, double newTemp);
     void setup(size_t newTime, double newTemp);
 
-    bool onToggleHeater(size_t timestamp);
+    bool onStart(size_t timestamp);
+    bool onCancel(size_t timestamp);
+    void onNextMode(size_t timestamp);
     void onPeriodic(size_t timestamp);
     void onIncTargetTemp(bool);
-    void onHeaterReady();
+
+    // Control flags
+    void onHeaterReady(size_t _ts = (size_t)NULL);
+    void enableDCFan(size_t _ts);
+    void enableConvectionControl(size_t _ts);
+    void enableConvectionSpeed(size_t _ts);
+    void disableDCFan(size_t _ts);
+    void disableConvectionControl(size_t _ts);
+    void disableConvectionSpeed(size_t _ts);
+
     #pragma endregion
 
     OvenState()
@@ -88,6 +114,11 @@ public:
         _acceleration = 0.0;
         _heaterEnabled = false;
         _heaterPulseReady = false;
+        heater_enable_control = false;
+        convection_control = false;
+        convection_speed_control = false;
+        dc_fan_control = false;
+        mode = OvenMode::Standby;
     }
 
     ~OvenState()

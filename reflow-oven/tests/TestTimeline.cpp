@@ -12,6 +12,7 @@ protected:
 public:
   int val1;
   int val2;
+  size_t savedTs;
 
   Incrementor* ptr()
   {
@@ -22,19 +23,20 @@ public:
   {
     val1 = 0;
     val2 = 0;
+    savedTs = (size_t)NULL;
   }
 
-  void inc1()
+  void inc1(size_t _ts)
   { 
     val1++;
   }
 
-  void inc2()
+  void inc2(size_t _ts)
   {
     val2++;
   }
 
-  void inc3()
+  void inc3(size_t _ts)
   {
     val2++;
     val2++;
@@ -82,19 +84,19 @@ TEST_FIXTURE(IncTimeline, RunScheduled)
   CHECK_EQUAL(1, i.val1);
   CHECK_EQUAL(0, i.val2);
   CHECK_TIMESTAMP(NULL, getDeadline(0));
-  CHECK_EQUAL((void(Incrementor::*)())NULL, getCallback(0));
+  CHECK_EQUAL((void(Incrementor::*)(size_t))NULL, getCallback(0));
 
   runScheduled(199);
   CHECK_EQUAL(1, i.val1);
   CHECK_EQUAL(0, i.val2);
   CHECK_TIMESTAMP(NULL, getDeadline(0));
-  CHECK_EQUAL((void(Incrementor::*)())NULL, getCallback(0));
+  CHECK_EQUAL((void(Incrementor::*)(size_t))NULL, getCallback(0));
 
   runScheduled(200);
   CHECK_EQUAL(1, i.val1);
   CHECK_EQUAL(1, i.val2);
   CHECK_TIMESTAMP(NULL, getDeadline(1));
-  CHECK_EQUAL((void(Incrementor::*)())NULL, getCallback(0));
+  CHECK_EQUAL((void(Incrementor::*)(size_t))NULL, getCallback(0));
 }
 
 TEST_FIXTURE(IncTimeline, RunScheduleGrouped) {
@@ -116,6 +118,6 @@ TEST_FIXTURE(IncTimeline, RunScheduleGrouped) {
   for (size_t i = 0; i < TIMELINE_SIZE; i++)
   {
     CHECK_TIMESTAMP(NULL, getDeadline(i));
-    CHECK_EQUAL((void(Incrementor::*)())NULL, getCallback(i));
+    CHECK_EQUAL((void(Incrementor::*)(size_t))NULL, getCallback(i));
   }
 }

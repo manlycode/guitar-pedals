@@ -8,6 +8,17 @@ TEST_FIXTURE(OvenState, DefaultMembers)
   CHECK_TIMESTAMP(0, timestamp());
 }
 
+TEST_FIXTURE(OvenState, Controls)
+{
+  OvenState state;
+
+  CHECK_EQUAL(false, heater_enable_control);
+  CHECK_EQUAL(false, convection_control);
+  CHECK_EQUAL(false, convection_speed_control);
+  CHECK_EQUAL(false, dc_fan_control);
+  CHECK_EQUAL(OvenMode::Standby, mode);
+}
+
 TEST_FIXTURE(OvenState, Setup)
 {
   OvenState state;
@@ -167,8 +178,8 @@ TEST_FIXTURE(OvenState, OnToggleHeater) {
   
   setup(0, 72.0);
 
-  CHECK_EQUAL(true, onToggleHeater(1000));
-  CHECK_EQUAL(false, onToggleHeater(1000));
+  CHECK_EQUAL(true, onStart(1000));
+  CHECK_EQUAL(false, onStart(1000));
 }
 
 
@@ -190,7 +201,7 @@ TEST_FIXTURE(OvenState, CanHeatHeaterDisabledPulseNotReady) {
   CHECK_EQUAL(84.0, predictedTemp());
   CHECK_EQUAL(false, canHeat());
 
-  onToggleHeater(1000);
+  onStart(1000);
   onHeaterReady();
   CHECK_EQUAL(true, canHeat());
 }
@@ -201,7 +212,7 @@ TEST_FIXTURE(OvenState, CanHeatHeaterDisabledPulseIsReady) {
   setTargetTemp(88.0);
   CHECK_EQUAL(72.0, predictedTemp());
 
-  CHECK_EQUAL(true, onToggleHeater(1000));
+  CHECK_EQUAL(true, onStart(1000));
   CHECK_EQUAL(false, canHeat());
 
   onHeaterReady();
@@ -247,4 +258,40 @@ TEST_FIXTURE(OvenState, OnIncTargetTemp) {
   CHECK_EQUAL(OVEN_STATE_MIN_TEMP, targetTemp());
   onIncTargetTemp(true);
   CHECK_EQUAL(OVEN_STATE_MIN_TEMP+OVEN_STATE_TEMP_INCREMENT, targetTemp());
+}
+
+
+TEST_FIXTURE(OvenState, BeginPreheat)
+{
+  OvenState state;
+
+  CHECK_EQUAL(false, heater_enable_control);
+
+  // Ready to heat after 8 sec
+  CHECK_EQUAL(OvenMode::Standby, mode);
+  onNextMode(0);
+  CHECK_EQUAL(OvenMode::Startup, mode);
+  CHECK_EQUAL(false, _heaterPulseReady);
+  CHECK_EQUAL(false, dc_fan_control);
+
+  // DC fan ready in 70ms
+  onPeriodic(70);
+  CHECK_EQUAL(true, dc_fan_control);
+
+  // Conv Speed ready in 270ms
+  CHECK_EQUAL(false, convection_speed_control);
+  onPeriodic(270);
+  CHECK_EQUAL(true, convection_speed_control);
+
+  // Conv control ready in 470ms
+  CHECK_EQUAL(false, convection_control);
+  onPeriodic(470);
+  CHECK_EQUAL(true, convection_control);
+
+  // Heaters come on in 8s
+  CHECK_EQUAL(OvenMode::Startup, mode);
+  CHECK_EQUAL(false, _heaterPulseReady);
+  onPeriodic(8*1000);
+  CHECK_EQUAL(OvenMode::Preheat, mode);
+  CHECK_EQUAL(true, _heaterPulseReady);
 }

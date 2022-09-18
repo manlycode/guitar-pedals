@@ -12,7 +12,7 @@
 #define NULL_DEADLINE (size_t)NULL
 
 
-template <typename T> using timeline_callback = void (T::*)();
+template <typename T> using timeline_callback = void (T::*)(size_t);
 template <typename T> class Timeline
 {
 
@@ -20,15 +20,13 @@ private:
     size_t _deadlines[TIMELINE_SIZE];
     timeline_callback<T> _timeline_callbacks[TIMELINE_SIZE];
     T* _instances[TIMELINE_SIZE];
-
+    size_t _forwardedTs[TIMELINE_SIZE];
  
     void reset()
     {
         for (uint8_t i = 0; i < TIMELINE_SIZE; i++)
         {
-            _deadlines[i] = NULL_DEADLINE;
-            _timeline_callbacks[i] = (timeline_callback<T>)NULL;
-            _instances[i] = (T*)NULL;
+            resetSlot(i);
         }
     }
 
@@ -52,6 +50,8 @@ private:
 
         _deadlines[idx] = NULL_DEADLINE;
         _timeline_callbacks[idx] = (timeline_callback<T>)NULL;
+        _instances[idx] = (T*)NULL;
+        _forwardedTs[idx] = (size_t)NULL;
     }
 
 public:
@@ -92,12 +92,13 @@ public:
     // Setters
     // ---------------------------------------
     #pragma region Setters
-    uint8_t schedule(size_t timestamp, size_t executeIn, timeline_callback<T> callback, T* instance)
+    uint8_t schedule(size_t timestamp, size_t executeIn, timeline_callback<T> callback, T* instance, size_t forwardTs = (size_t)NULL)
     {
         uint8_t idx = firstOpenSlot();
         _deadlines[idx] = timestamp + executeIn;
         _timeline_callbacks[idx] = callback;
         _instances[idx] = instance;
+        _forwardedTs[idx] = forwardTs;
         return idx;
     }
 
@@ -112,7 +113,7 @@ public:
                 // getCallback(i)();
                 T* instance = getInstance(i);
                 timeline_callback<T> cb = getCallback(i);
-                (*instance.*cb)();
+                (*instance.*cb)((size_t)NULL);
                 resetSlot(i);
             }
         }

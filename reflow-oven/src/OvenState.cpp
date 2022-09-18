@@ -90,12 +90,52 @@ void OvenState::update(size_t newTime, double newTemp)
     _predictedTemp = _temp + _velocity;
 }
 
-bool OvenState::onToggleHeater(size_t timestamp) 
+bool OvenState::onStart(size_t timestamp) 
 {
+    timeline.schedule(timestamp, 70, &OvenState::enableDCFan, this);
+    timeline.schedule(timestamp, 270, &OvenState::enableConvectionControl, this);
+    timeline.schedule(timestamp, 470, &OvenState::enableConvectionSpeed, this);
     timeline.schedule(timestamp, 8*1000, &OvenState::onHeaterReady, this);
     _heaterPulseReady = false;
-    _heaterEnabled = !_heaterEnabled;
+    _heaterEnabled = true;
     return _heaterEnabled;
+}
+
+bool OvenState::onCancel(size_t timestamp) 
+{
+    mode = OvenMode::Canceling;
+    timeline.schedule(timestamp, 1000, &OvenState::onNextMode, this);
+    // timeline.schedule(timestamp, 270, &OvenState::enableConvectionControl, this);
+    // timeline.schedule(timestamp, 470, &OvenState::enableConvectionSpeed, this);
+    // timeline.schedule(timestamp, 8*1000, &OvenState::onHeaterReady, this);
+    // timeline.schedule(timestamp, 8*1000, &OvenState::onNextMode, this);
+    // _heaterPulseReady = false;
+    // _heaterEnabled = true;
+    return _heaterEnabled;
+}
+
+void OvenState::onNextMode(size_t timestamp) 
+{
+    switch (mode)
+    {
+    case OvenMode::Standby:
+        mode = OvenMode::Startup;
+        onStart(timestamp);
+        break;
+
+    case OvenMode::Startup:
+        mode = OvenMode::Preheat;
+        break;
+
+    case OvenMode::Canceling:
+        mode = OvenMode::Standby;
+        break;
+
+    default:
+        mode = OvenMode::Canceling;
+        onCancel(timestamp);
+        break;
+    }
 }
 
 void OvenState::onPeriodic(size_t timestamp) 
@@ -103,8 +143,7 @@ void OvenState::onPeriodic(size_t timestamp)
     timeline.runScheduled(timestamp);
 }
 
-void OvenState::onHeaterReady() {
-
+void OvenState::onHeaterReady(size_t _ts) {
     _heaterPulseReady = true;
 }
 
@@ -120,6 +159,30 @@ void OvenState::onIncTargetTemp(bool increment) {
         }
     }
     
+}
+
+void OvenState::enableDCFan(size_t _ts) {
+    dc_fan_control = true;
+}
+
+void OvenState::enableConvectionSpeed(size_t _ts) {
+    convection_speed_control = true;
+}
+
+void OvenState::enableConvectionControl(size_t _ts) {
+    convection_control = true;
+}
+
+void OvenState::disableDCFan(size_t _ts) {
+    dc_fan_control = false;
+}
+
+void OvenState::disableConvectionSpeed(size_t _ts) {
+    convection_speed_control = false;
+}
+
+void OvenState::disableConvectionControl(size_t _ts) {
+    convection_control = false;
 }
 
 #pragma endregion
