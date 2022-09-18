@@ -2,7 +2,8 @@
 #define OVEN_STATE_h
 #include <stdint.h>
 #include <stdlib.h>
-#include <iostream>
+
+#include "Timeline.h"
 
 #define OVEN_STATE_MIN_TEMP 70.0
 #define OVEN_STATE_MAX_TEMP 500.0
@@ -27,6 +28,9 @@ private:
     bool _heaterEnabled;
     bool _heaterPulseReady;
 
+    Timeline timeline;
+
+    void onHeaterReady();
 
 public:
     // ---------------------------------------
@@ -62,8 +66,8 @@ public:
     void update(size_t newTime, double newTemp);
     void setup(size_t newTime, double newTemp);
 
-    bool onToggleHeater();
-    void onHeaterReady();
+    bool onToggleHeater(size_t timestamp);
+    void onPeriodic(size_t timestamp);
     void onIncTargetTemp(bool);
 
     #pragma endregion

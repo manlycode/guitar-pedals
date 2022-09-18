@@ -2,8 +2,6 @@
 #define TIMELINE_h
 
 #include <stdint.h>
-#include <stdlib.h>
-#include <iostream>
 
 #define TIMELINE_SIZE 10
 #define NULL_DEADLINE (size_t)NULL

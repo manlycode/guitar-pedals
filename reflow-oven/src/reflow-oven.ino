@@ -2,9 +2,8 @@
 SYSTEM_MODE(SEMI_AUTOMATIC);
 
 #include "Encoder.h"
-#include "UI/UI.h"
-// #include "OvenStateLegacy.h"
 #include "OvenState.h"
+#include "UI.h"
 #include "Thermistor.h"
 /* ------------------------------------
 Pin definitions
@@ -38,8 +37,8 @@ Encoder encoder(ENCODER_B, ENCODER_A);
 Adafruit_SSD1306 oled(OLED_RESET);
 
 OvenState ovenState;
-Timer timerPulseReady(8000, &OvenState::onHeaterReady, ovenState, true);
-// Timer periodic(PERIODIC_DELAY, doPeriodic);
+// Timer timerPulseReady(8000, &OvenState::onHeaterReady, ovenState, true);
+Timer periodic(PERIODIC_DELAY, doPeriodic);
 Thermistor ntc(TEMP_NTC, 4233.27, 24000.0);
 
 UI ui(&oled, &ovenState, &ntc);
@@ -69,7 +68,8 @@ void phaseAngleZero(){
 }
 
 void doButtonPress(){
-  bool heaterEnabled = ovenState.onToggleHeater();
+  size_t timestamp = millis();
+  bool heaterEnabled = ovenState.onToggleHeater(timestamp);
   if (heaterEnabled) {
     timerPulseReady.start();
     pinSetFast(DC_FAN_ENABLE);
@@ -93,13 +93,11 @@ void doRotate(){
   ui.markDirty();
 }
 
-// void doPeriodic(){
-//   noInterrupts();
-//   int32_t newTemp = analogRead(TEMP_NTC);
-//   ovenState.onPreiodicTick(newTemp);
-//   ui.markDirty();
-//   interrupts();
-// }
+void doPeriodic(){
+  noInterrupts();
+  ovenState.onPeriodic(millis());
+  interrupts();
+}
 
 /* ------------------------------------
 CODE
