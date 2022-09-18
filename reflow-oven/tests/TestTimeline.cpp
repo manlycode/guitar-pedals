@@ -28,6 +28,13 @@ void inc2()
   val2++;
 }
 
+void inc3()
+{
+  val2++;
+  val2++;
+}
+
+
 
 
 SUITE(Timeline)
@@ -80,5 +87,30 @@ SUITE(Timeline)
     CHECK_EQUAL(1, val2);
     CHECK_TIMESTAMP(NULL, timeline.getDeadline(1));
     CHECK_CALLBACK(NULL, timeline.getCallback(1));
+  }
+
+  TEST(RunScheduleGrouped) {
+    Timeline timeline;
+    reset();
+    CHECK_EQUAL(0, val1);
+    CHECK_EQUAL(0, val2);
+
+    timeline.schedule(0, 100, &inc1);
+    timeline.schedule(0, 200, &inc2);
+    timeline.schedule(0, 300, &inc1);
+    timeline.schedule(0, 400, &inc2);
+    timeline.schedule(0, 500, &inc3);
+    timeline.schedule(0, 600, &inc3);
+
+    timeline.runScheduled(600);
+
+    CHECK_EQUAL(2, val1);
+    CHECK_EQUAL(6, val2);
+
+    for (size_t i = 0; i < TIMELINE_SIZE; i++)
+    {
+      CHECK_TIMESTAMP(NULL, timeline.getDeadline(i));
+      CHECK_CALLBACK(NULL, timeline.getCallback(i));
+    }
   }
 }
