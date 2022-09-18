@@ -92,7 +92,7 @@ void OvenState::update(size_t newTime, double newTemp)
 
 bool OvenState::onToggleHeater(size_t timestamp) 
 {
-    // timeline.schedule(timestamp, 8*1000, (timeline_callback)&onHeaterReady);
+    timeline.schedule(timestamp, 8*1000, &OvenState::onHeaterReady, this);
     _heaterPulseReady = false;
     _heaterEnabled = !_heaterEnabled;
     return _heaterEnabled;
@@ -100,11 +100,7 @@ bool OvenState::onToggleHeater(size_t timestamp)
 
 void OvenState::onPeriodic(size_t timestamp) 
 {
-    // Log.info("ts: %lu", timestamp);
-    // Log.info("dl0: %lu", timeline.getDeadline(0));
-    // Log.info("dl1: %lu", timeline.getCallback(0));
-
-    // timeline.runScheduled(timestamp);
+    timeline.runScheduled(timestamp);
 }
 
 void OvenState::onHeaterReady() {

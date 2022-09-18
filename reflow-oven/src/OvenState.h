@@ -8,6 +8,8 @@
     #include "application.h"
 #endif
 
+#include "Timeline.h"
+
 // #include "Timeline.h"
 
 #define OVEN_STATE_MIN_TEMP 70.0
@@ -33,9 +35,7 @@ private:
     bool _heaterEnabled;
     bool _heaterPulseReady;
 
-    // Timeline<OvenState> timeline;
-
-    
+    Timeline<OvenState> timeline;
 
 public:
     // ---------------------------------------
