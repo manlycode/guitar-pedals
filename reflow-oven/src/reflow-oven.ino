@@ -1,3 +1,7 @@
+#ifndef FROM_ino
+#define FROM_ino
+#endif
+
 // SYSTEM_THREAD(ENABLED);
 SYSTEM_MODE(SEMI_AUTOMATIC);
 
@@ -71,7 +75,6 @@ void doButtonPress(){
   size_t timestamp = millis();
   bool heaterEnabled = ovenState.onToggleHeater(timestamp);
   if (heaterEnabled) {
-    timerPulseReady.start();
     pinSetFast(DC_FAN_ENABLE);
   } else {
     noInterrupts();
@@ -94,9 +97,8 @@ void doRotate(){
 }
 
 void doPeriodic(){
-  noInterrupts();
+  Log.info("doPeriodic...");
   ovenState.onPeriodic(millis());
-  interrupts();
 }
 
 /* ------------------------------------
@@ -130,7 +132,7 @@ void setup()   {
   attachInterrupt(ENCODER_B, doRotate, FALLING);
   attachInterrupt(PHASE_ANGLE_ZERO, phaseAngleZero, RISING);
   interrupts();
-  // periodic.start();
+  periodic.start();
   // Serial.printlnf("starting...");
   // Particle.connect();
 }

@@ -1,7 +1,11 @@
 #ifndef OVEN_STATE_h
 #define OVEN_STATE_h
-#include <stdint.h>
-#include <stdlib.h>
+
+#ifdef UNITTESTCPP_H
+    #include <stdint.h>
+#else
+    #include "application.h"
+#endif
 
 #include "Timeline.h"
 
@@ -28,7 +32,7 @@ private:
     bool _heaterEnabled;
     bool _heaterPulseReady;
 
-    Timeline timeline;
+    Timeline<OvenState> timeline;
 
     void onHeaterReady();
 

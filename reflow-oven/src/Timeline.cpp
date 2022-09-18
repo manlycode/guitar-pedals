@@ -1,6 +1,6 @@
 #include "Timeline.h"
 
-void Timeline::reset()
+template <typename T> void Timeline<T>::reset()
 {
     for (uint8_t i = 0; i < TIMELINE_SIZE; i++)
     {
@@ -9,7 +9,7 @@ void Timeline::reset()
     }
 }
 
-void Timeline::resetSlot(uint8_t idx)
+template <typename T> void Timeline<T>::resetSlot(uint8_t idx)
 {
     if (idx >= TIMELINE_SIZE) {
         return;
@@ -19,7 +19,7 @@ void Timeline::resetSlot(uint8_t idx)
     _timeline_callbacks[idx] = NULL_CALLBACK;
 }
 
-uint8_t Timeline::firstOpenSlot()
+template <typename T> uint8_t Timeline<T>::firstOpenSlot()
 {
     for (uint8_t i = 0; i < TIMELINE_SIZE; i++)
     {
@@ -36,7 +36,7 @@ uint8_t Timeline::firstOpenSlot()
 // ---------------------------------------
 #pragma region Getters
 
-timeline_callback Timeline::getCallback(uint8_t idx)
+template <typename T> timeline_callback Timeline<T>::getCallback(uint8_t idx)
 {
     if (idx >= TIMELINE_SIZE) {
         return NULL;
@@ -45,7 +45,7 @@ timeline_callback Timeline::getCallback(uint8_t idx)
     return _timeline_callbacks[idx];
 }
 
-size_t Timeline::getDeadline(uint8_t idx)
+template <typename T> size_t Timeline<T>::getDeadline(uint8_t idx)
 {
     if (idx >= TIMELINE_SIZE) {
         return NULL_DEADLINE;
@@ -60,7 +60,7 @@ size_t Timeline::getDeadline(uint8_t idx)
 // ---------------------------------------
 #pragma region Setters
 
-uint8_t Timeline::schedule(size_t timestamp, size_t executeIn, timeline_callback callback)
+template <typename T> uint8_t Timeline<T>::schedule(size_t timestamp, size_t executeIn, timeline_callback callback, T* instance)
 {
     uint8_t idx = firstOpenSlot();
     _deadlines[idx] = timestamp + executeIn;
@@ -68,7 +68,7 @@ uint8_t Timeline::schedule(size_t timestamp, size_t executeIn, timeline_callback
     return idx;
 }
 
-void Timeline::runScheduled(size_t currentTime)
+template <typename T> void Timeline<T>::runScheduled(size_t currentTime)
 {
     for (uint8_t i = 0; i < TIMELINE_SIZE; i++)
     {
