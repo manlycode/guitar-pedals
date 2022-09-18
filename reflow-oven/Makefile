@@ -1,5 +1,5 @@
 CXX ?= g++
-CXXFLAGS ?= -g -Wall -W -Winline -ansi
+CXXFLAGS ?= -g -Wall -W -Winline -ansi -D UNIT_TEST -std=gnu++17
 CXXFLAGS += -Isrc -Itests/UnitTest++/src
 RM = rm
 

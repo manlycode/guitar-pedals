@@ -104,7 +104,7 @@ void OvenState::onPeriodic(size_t timestamp)
     // Log.info("dl0: %lu", timeline.getDeadline(0));
     // Log.info("dl1: %lu", timeline.getCallback(0));
 
-    timeline.runScheduled(timestamp);
+    // timeline.runScheduled(timestamp);
 }
 
 void OvenState::onHeaterReady() {

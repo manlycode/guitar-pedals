@@ -169,8 +169,8 @@ SUITE(OvenState)
     OvenState state = OvenState();
     state.setup(0, 72.0);
 
-    CHECK_EQUAL(true, state.onToggleHeater());
-    CHECK_EQUAL(false, state.onToggleHeater());
+    CHECK_EQUAL(true, state.onToggleHeater(1000));
+    CHECK_EQUAL(false, state.onToggleHeater(1000));
   }
 
 
@@ -192,7 +192,7 @@ SUITE(OvenState)
     CHECK_EQUAL(84.0, state.predictedTemp());
     CHECK_EQUAL(false, state.canHeat());
 
-    state.onToggleHeater();
+    state.onToggleHeater(1000);
     state.onHeaterReady();
     CHECK_EQUAL(true, state.canHeat());
   }
@@ -203,7 +203,7 @@ SUITE(OvenState)
     state.setTargetTemp(88.0);
     CHECK_EQUAL(72.0, state.predictedTemp());
 
-    CHECK_EQUAL(true, state.onToggleHeater());
+    CHECK_EQUAL(true, state.onToggleHeater(1000));
     CHECK_EQUAL(false, state.canHeat());
 
     state.onHeaterReady();
