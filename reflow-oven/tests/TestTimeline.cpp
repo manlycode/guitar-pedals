@@ -63,66 +63,55 @@ typedef Timeline<Incrementor> IncTimeline;
 TEST_FIXTURE(IncTimeline, Schedule)
 {
   Incrementor incrementor;
+
   schedule(0, 1000, &Incrementor::inc1, &incrementor);
-  CHECK_EQUAL(2000, getDeadline(0));
+  CHECK_TIMESTAMP(1000, getDeadline(0));
+  CHECK_EQUAL(&Incrementor::inc1, getCallback(0));
+  CHECK_EQUAL(&incrementor, getInstance(0));
+
+  schedule(500, 2000, &Incrementor::inc2, &incrementor);
+  CHECK_TIMESTAMP(2500, getDeadline(1));
+  CHECK_EQUAL(&Incrementor::inc2, getCallback(1));
+  CHECK_EQUAL(&incrementor, getInstance(1));
 }
 
+TEST_FIXTURE(IncTimeline, RunScheduled)
+{
+  Incrementor i;
+  CHECK_EQUAL(0, i.val1);
+  CHECK_EQUAL(0, i.val2);
+
+  schedule(0, 100, &Incrementor::inc1, &i);
+  schedule(0, 200, &Incrementor::inc2, &i);
+
+  runScheduled(0);
+  CHECK_EQUAL(0, i.val1);
+  CHECK_EQUAL(0, i.val2);
+
+  runScheduled(100);
+  CHECK_EQUAL(1, i.val1);
+  CHECK_EQUAL(0, i.val2);
+  CHECK_TIMESTAMP(NULL, getDeadline(0));
+  CHECK_EQUAL((void(Incrementor::*)())NULL, getCallback(0));
+
+  runScheduled(199);
+  CHECK_EQUAL(1, i.val1);
+  CHECK_EQUAL(0, i.val2);
+  CHECK_TIMESTAMP(NULL, getDeadline(0));
+  CHECK_EQUAL((void(Incrementor::*)())NULL, getCallback(0));
+
+  runScheduled(200);
+  CHECK_EQUAL(1, i.val1);
+  CHECK_EQUAL(1, i.val2);
+  CHECK_TIMESTAMP(NULL, getDeadline(1));
+  CHECK_EQUAL((void(Incrementor::*)())NULL, getCallback(0));
+}
 
 // SUITE(Timeline)
 // {
-//   TEST(Schedule)
-//   {
-//     Timeline<Incrementor> timeline;
-//     Incrementor incr;
-
-//     CHECK_EQUAL(0, timeline.schedule(1000, 2000, &Incrementor::inc1, &incr));
-//     CHECK_TIMESTAMP(3000, timeline.getDeadline(0));
-//     CHECK_EQUAL(&Incrementor::inc1, timeline.getCallback(0));
-//     CHECK_EQUAL(&incr, timeline.getInstance(0));
 
 
-//     CHECK_EQUAL(1, timeline.schedule(1000, 2000, &Incrementor::inc2, &incr));
-//     CHECK_TIMESTAMP(5000, timeline.getDeadline(1));
-//     CHECK_EQUAL(&Incrementor::inc2, timeline.getCallback(1));
-//     CHECK_EQUAL(&incr, timeline.getInstance(0));
 
-//   }
-
-//   // TEST(RunScheduled)
-//   // {
-//   //   Timeline timeline;
-//   //   reset();
-
-//   //   CHECK_EQUAL(0, val1);
-//   //   CHECK_EQUAL(0, val2);
-
-//   //   timeline.schedule(0, 100, &inc1);
-//   //   timeline.schedule(0, 200, &inc2);
-//   //   CHECK_TIMESTAMP(100, timeline.getDeadline(0));
-//   //   CHECK_CALLBACK(inc1, timeline.getCallback(0));
-
-//   //   timeline.runScheduled(0);
-//   //   CHECK_EQUAL(0, val1);
-//   //   CHECK_EQUAL(0, val2);
-
-//   //   timeline.runScheduled(100);
-//   //   CHECK_EQUAL(1, val1);
-//   //   CHECK_EQUAL(0, val2);
-//   //   CHECK_TIMESTAMP(NULL, timeline.getDeadline(0));
-//   //   CHECK_CALLBACK(NULL, timeline.getCallback(0));
-
-//   //   timeline.runScheduled(199);
-//   //   CHECK_EQUAL(1, val1);
-//   //   CHECK_EQUAL(0, val2);
-//   //   CHECK_TIMESTAMP(NULL, timeline.getDeadline(0));
-//   //   CHECK_CALLBACK(NULL, timeline.getCallback(0));
-
-//   //   timeline.runScheduled(200);
-//   //   CHECK_EQUAL(1, val1);
-//   //   CHECK_EQUAL(1, val2);
-//   //   CHECK_TIMESTAMP(NULL, timeline.getDeadline(1));
-//   //   CHECK_CALLBACK(NULL, timeline.getCallback(1));
-//   // }
 
 //   // TEST(RunScheduleGrouped) {
 //   //   Timeline timeline;

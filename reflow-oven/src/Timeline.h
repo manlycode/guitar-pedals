@@ -28,6 +28,7 @@ private:
         {
             _deadlines[i] = NULL_DEADLINE;
             _timeline_callbacks[i] = (timeline_callback<T>)NULL;
+            _instances[i] = (T*)NULL;
         }
     }
 
@@ -96,6 +97,7 @@ public:
         uint8_t idx = firstOpenSlot();
         _deadlines[idx] = timestamp + executeIn;
         _timeline_callbacks[idx] = callback;
+        _instances[idx] = instance;
         return idx;
     }
 
@@ -107,7 +109,10 @@ public:
             if ((deadline != NULL_DEADLINE) && (currentTime >= deadline))
             {
                 // Call the callback
-                getCallback(i)();
+                // getCallback(i)();
+                T* instance = getInstance(i);
+                timeline_callback<T> cb = getCallback(i);
+                (*instance.*cb)();
                 resetSlot(i);
             }
         }
