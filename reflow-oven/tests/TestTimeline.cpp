@@ -1,16 +1,6 @@
 #include "UnitTest++.h"
 #include "Timeline.h"
 
-void callback1()
-{
-}
-
-void callback2()
-{
-}
-
-
-
 class Incrementor
 {
 private:
@@ -107,34 +97,25 @@ TEST_FIXTURE(IncTimeline, RunScheduled)
   CHECK_EQUAL((void(Incrementor::*)())NULL, getCallback(0));
 }
 
-// SUITE(Timeline)
-// {
+TEST_FIXTURE(IncTimeline, RunScheduleGrouped) {
+  Incrementor i;
+  CHECK_EQUAL(0, i.val1);
+  CHECK_EQUAL(0, i.val2);
 
+  schedule(0, 100, &Incrementor::inc1, &i);
+  schedule(0, 200, &Incrementor::inc2, &i);
+  schedule(0, 300, &Incrementor::inc1, &i);
+  schedule(0, 400, &Incrementor::inc2, &i);
+  schedule(0, 500, &Incrementor::inc3, &i);
+  schedule(0, 600, &Incrementor::inc3, &i);
 
+  runScheduled(600);
+  CHECK_EQUAL(2, i.val1);
+  CHECK_EQUAL(6, i.val2);
 
-
-//   // TEST(RunScheduleGrouped) {
-//   //   Timeline timeline;
-//   //   reset();
-//   //   CHECK_EQUAL(0, val1);
-//   //   CHECK_EQUAL(0, val2);
-
-//   //   timeline.schedule(0, 100, &inc1);
-//   //   timeline.schedule(0, 200, &inc2);
-//   //   timeline.schedule(0, 300, &inc1);
-//   //   timeline.schedule(0, 400, &inc2);
-//   //   timeline.schedule(0, 500, &inc3);
-//   //   timeline.schedule(0, 600, &inc3);
-
-//   //   timeline.runScheduled(600);
-
-//   //   CHECK_EQUAL(2, val1);
-//   //   CHECK_EQUAL(6, val2);
-
-//   //   for (size_t i = 0; i < TIMELINE_SIZE; i++)
-//   //   {
-//   //     CHECK_TIMESTAMP(NULL, timeline.getDeadline(i));
-//   //     CHECK_CALLBACK(NULL, timeline.getCallback(i));
-//   //   }
-//   // }
-// }
+  for (size_t i = 0; i < TIMELINE_SIZE; i++)
+  {
+    CHECK_TIMESTAMP(NULL, getDeadline(i));
+    CHECK_EQUAL((void(Incrementor::*)())NULL, getCallback(i));
+  }
+}
