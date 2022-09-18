@@ -1,6 +1,6 @@
 CXX ?= g++
 CXXFLAGS ?= -g -Wall -W -Winline -ansi
-CXXFLAGS += -Isrc -Itests/UnitTest++/src
+CXXFLAGS += -Isrc/OvenState -Isrc/Timeline -Itests/UnitTest++/src
 RM = rm
 
 .SUFFIXES: .o .cpp
@@ -13,9 +13,11 @@ testlib     = UnitTest++
 testlibpath = $(testlibdir)/lib$(testlib).a
 testrunner  = tests/Main.cpp
 
-objects = src/OvenState.o
+objects = src/OvenState/OvenState.o \
+			src/Timeline/Timeline.o
 
-testobjects = tests/TestOvenState.o
+testobjects = tests/TestOvenState.o \
+				tests/TestTimeline.o
 
 LDFLAGS ?= -Lsrc -l$(name) -L$(testlibdir) -l$(testlib)
 
