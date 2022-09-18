@@ -93,11 +93,13 @@ void OvenState::update(size_t newTime, double newTemp)
 bool OvenState::onStart(size_t timestamp) 
 {
     timeline.schedule(timestamp, 70, &OvenState::enableDCFan, this);
-    timeline.schedule(timestamp, 270, &OvenState::enableConvectionControl, this);
-    timeline.schedule(timestamp, 470, &OvenState::enableConvectionSpeed, this);
+    timeline.schedule(timestamp, 270, &OvenState::enableConvectionSpeed, this);
+    timeline.schedule(timestamp, 470, &OvenState::enableConvectionControl, this);
     timeline.schedule(timestamp, 8*1000, &OvenState::onHeaterReady, this);
+    timeline.schedule(timestamp, 8*1000, &OvenState::onNextMode, this);
     _heaterPulseReady = false;
     _heaterEnabled = true;
+    
     return _heaterEnabled;
 }
 

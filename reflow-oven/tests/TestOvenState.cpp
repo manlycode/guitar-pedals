@@ -175,11 +175,8 @@ TEST_FIXTURE(OvenState, IsTooHot) {
 }
 
 TEST_FIXTURE(OvenState, OnToggleHeater) {
-  
   setup(0, 72.0);
-
   CHECK_EQUAL(true, onStart(1000));
-  CHECK_EQUAL(false, onStart(1000));
 }
 
 
