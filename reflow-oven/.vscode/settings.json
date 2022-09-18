@@ -3,7 +3,13 @@
     "C_Cpp.default.configurationProvider": "particle.particle-vscode-core",
     "files.associations": {
         "*.ino": "cpp",
-        "cmath": "cpp"
+        "cmath": "cpp",
+        "istream": "cpp",
+        "locale": "cpp",
+        "memory": "cpp",
+        "thread": "cpp",
+        "tuple": "cpp",
+        "functional": "cpp"
     },
     "particle.firmwareVersion": "5.0.0",
     "particle.targetPlatform": "argon",

@@ -15,11 +15,12 @@ typedef void (*timeline_callback)( );
 class Timeline
 {
 private:
-    void reset();
     size_t _deadlines[TIMELINE_SIZE];
     timeline_callback _timeline_callbacks[TIMELINE_SIZE];
 
+    void reset();
     uint8_t firstOpenSlot();
+    void resetSlot(uint8_t);
 
 public:
     // ---------------------------------------
@@ -37,6 +38,7 @@ public:
     // ---------------------------------------
     #pragma region Setters
     uint8_t schedule(size_t timestamp, size_t executeIn, timeline_callback callback);
+    void runScheduled(size_t time);
     #pragma endregion
 
     Timeline()

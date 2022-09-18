@@ -9,6 +9,16 @@ void Timeline::reset()
     }
 }
 
+void Timeline::resetSlot(uint8_t idx)
+{
+    if (idx >= TIMELINE_SIZE) {
+        return;
+    }
+
+    _deadlines[idx] = NULL_DEADLINE;
+    _timeline_callbacks[idx] = NULL_CALLBACK;
+}
+
 uint8_t Timeline::firstOpenSlot()
 {
     for (uint8_t i = 0; i < TIMELINE_SIZE; i++)
@@ -56,6 +66,20 @@ uint8_t Timeline::schedule(size_t timestamp, size_t executeIn, timeline_callback
     _deadlines[idx] = timestamp + executeIn;
     _timeline_callbacks[idx] = callback;
     return idx;
+}
+
+void Timeline::runScheduled(size_t currentTime)
+{
+    for (uint8_t i = 0; i < TIMELINE_SIZE; i++)
+    {
+        size_t deadline = getDeadline(i);
+        if ((deadline != NULL_DEADLINE) && (currentTime >= deadline))
+        {
+            // Call the callback
+            getCallback(i)();
+            resetSlot(i);
+        }
+    }
 }
 
 #pragma endregion
