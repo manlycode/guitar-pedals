@@ -16,7 +16,7 @@ private:
     void (UI::*renderView)();
     int32_t rotateVal;
     bool needsRender;
-
+    char* modeName(OvenMode) const;
 public:
     uint8_t heaterDelay;
     void setup();

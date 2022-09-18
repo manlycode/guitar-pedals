@@ -40,24 +40,25 @@ private:
     double _acceleration;
     Timeline<OvenState> timeline;
 
+    void resetFlags();
+
 protected:
     // Heater State
     bool _heaterEnabled;
     bool _heaterPulseReady;
-    OvenMode mode;
+    
 
 public:
     // ---------------------------------------
     // Getters
     // ---------------------------------------
     #pragma region Getters
-
+    OvenMode mode;
     // Controls
     bool heater_enable_control;
     bool convection_control;
     bool convection_speed_control;
     bool dc_fan_control;
-
     double temp();
     double predictedTemp();
     double velocity();
@@ -70,6 +71,7 @@ public:
 
     bool isTooHot();
     bool canHeat();
+
     #pragma endregion
 
     // ---------------------------------------
@@ -94,6 +96,8 @@ public:
 
     // Control flags
     void onHeaterReady(size_t _ts = (size_t)NULL);
+    void enableHeaterRelay(size_t _ts);
+    void disableHeaterRelay(size_t _ts);
     void enableDCFan(size_t _ts);
     void enableConvectionControl(size_t _ts);
     void enableConvectionSpeed(size_t _ts);
@@ -112,12 +116,7 @@ public:
         _velocity = 0.0;
         _prevVelocity = 0.0;
         _acceleration = 0.0;
-        _heaterEnabled = false;
-        _heaterPulseReady = false;
-        heater_enable_control = false;
-        convection_control = false;
-        convection_speed_control = false;
-        dc_fan_control = false;
+        resetFlags();
         mode = OvenMode::Standby;
     }
 

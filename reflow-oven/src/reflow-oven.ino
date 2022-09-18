@@ -73,19 +73,22 @@ void phaseAngleZero(){
 
 void doButtonPress(){
   size_t timestamp = millis();
-  bool heaterEnabled = ovenState.onToggleHeater(timestamp);
-  if (heaterEnabled) {
-    pinSetFast(DC_FAN_ENABLE);
-  } else {
-    noInterrupts();
-    pinResetFast(HEATER_TOP);
-    pinResetFast(HEATER_MIDDLE);
-    pinResetFast(HEATER_BOTTOM);
-    pinResetFast(DC_FAN_ENABLE);
-    interrupts();  
+  switch (ovenState.mode)
+  {
+  case OvenMode::Standby:
+    ovenState.onNextMode(timestamp);  
+    break;
+
+  case OvenMode::Startup:
+    break;
+
+  case OvenMode::Canceling:
+    break;
+
+  default:
+    ovenState.onCancel(timestamp);
+    break;
   }
-  
-  digitalWriteFast(HEATER_RELAY_ENABLE, heaterEnabled);
   ui.markDirty();
 }
 
@@ -122,11 +125,21 @@ void setup()   {
   pinMode(HEATER_BOTTOM, OUTPUT);
 
   pinMode(DC_FAN_ENABLE, OUTPUT);
+  pinMode(CONVECTION_SPEED, OUTPUT);
+  pinMode(CONVECTION_CONTROL, OUTPUT);
+  
   pinMode(TEMP_NTC, INPUT);
   // doPeriodic();
 
   ui.setup();
   ui.render();
+  pinResetFast(HEATER_BOTTOM);
+  pinResetFast(HEATER_MIDDLE);
+  pinResetFast(HEATER_TOP);
+  pinResetFast(HEATER_RELAY_ENABLE);
+  pinResetFast(CONVECTION_CONTROL);
+  pinResetFast(CONVECTION_SPEED);
+  pinResetFast(DC_FAN_ENABLE);
 
   attachInterrupt(ENCODER_SWITCH, doButtonPress, FALLING);
   attachInterrupt(ENCODER_B, doRotate, FALLING);
@@ -139,6 +152,13 @@ void setup()   {
 
 
 void loop() {
+  noInterrupts();
+  digitalWriteFast(HEATER_RELAY_ENABLE, ovenState.heaterEnabled());
+  digitalWriteFast(DC_FAN_ENABLE, ovenState.dc_fan_control);
+  digitalWriteFast(CONVECTION_SPEED, ovenState.convection_speed_control);
+  digitalWriteFast(CONVECTION_CONTROL, ovenState.convection_control);
+  interrupts();
+
   ntc.readADC();
   ovenState.update(millis(), ntc.readTempF());
   ui.markDirty();

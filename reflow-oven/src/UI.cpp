@@ -2,6 +2,7 @@
 #include "ConnectingIcon.h"
 #include "TopBar.h"
 #include "View.h"
+#include "OvenState.h"
 
 void UI::setup()
 {   
@@ -44,7 +45,8 @@ void UI::renderSplashScreen() {
     oled->printlnf(F("Next T: %0.1fF"), ovenState->predictedTemp());
     oled->printlnf(F("V: %+0.2f"), ovenState->velocity());
     oled->printlnf(F("A: %+0.2f"), ovenState->acceleration());
-    oled->printlnf(F("Heater: %s:%s:%s"),  ovenState->heaterEnabled() ? F("On") : F("Off"), ovenState->pulseReady() ? F("On") : F("Off"), ovenState->canHeat() ? F("On") : F("Off"));
+    oled->printlnf(F("Htr:%d:%d:%d Ctl:%d:%d:%d"),  ovenState->heaterEnabled(), ovenState->pulseReady(), ovenState->canHeat(), ovenState->dc_fan_control, ovenState->convection_speed_control, ovenState->convection_control);
+    oled->printlnf(F("Mode: %s"), modeName(ovenState->mode));
     oled->display();
     delay(1);
 }
@@ -61,4 +63,24 @@ void UI::renderSplashScreen2() {
 
 void UI::markDirty() {
     needsRender = true;
+}
+
+char* UI::modeName(OvenMode mode) const
+{
+    switch (mode)
+    {
+
+    case OvenMode::Standby:
+        return F("Standby");
+
+    case OvenMode::Startup:
+        return F("Startup");
+
+    case OvenMode::Preheat:
+        return F("Preheat");
+
+    case OvenMode::Canceling:
+        return F("Canceling");
+    }
+    return "dunno?";
 }
