@@ -19,15 +19,11 @@ double TempCurve::duration(int idx)
     double startT = 0.0;
     double endT = 0.0;
 
-    if (idx> 0) {
-        startT = getTarget(idx-1)->t;
-    }
+    if (idx <= 0) { return 0.0; }
+    if (idx > TEMP_CURVE_SIZE) { return 0.0; }
 
-    if (idx < (TEMP_CURVE_SIZE-1)){
-        endT = getTarget(idx)->t;
-    } else {
-        return 50.0*60;
-    }
+    startT = getTarget(idx-1)->t;
+    endT = getTarget(idx)->t;
 
     return endT - startT;
 }
@@ -46,4 +42,11 @@ double TempCurve::deltaTemp(int idx)
     }
 
     return endTemp - startTemp;
+}
+
+double TempCurve::velocity(int idx)
+{
+    double dTemp = deltaTemp(idx);
+    double dTime = duration(idx);
+    return dTemp/dTime;
 }

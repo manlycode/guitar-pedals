@@ -23,6 +23,7 @@ enum OvenMode {
     RampToSoak,
     Preheat,
     RampToPeak,
+    RampToPeak2,
     Reflow,
     Cooling,
     Canceling
