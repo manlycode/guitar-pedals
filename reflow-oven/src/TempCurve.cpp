@@ -31,3 +31,19 @@ double TempCurve::duration(int idx)
 
     return endT - startT;
 }
+
+double TempCurve::deltaTemp(int idx)
+{
+    double startTemp = 25.0;
+    double endTemp = 25.0;
+
+    if (idx> 0) {
+        startTemp = getTarget(idx-1)->temp;
+    }
+
+    if (idx <= (TEMP_CURVE_SIZE-1)){
+        endTemp = getTarget(idx)->temp;
+    }
+
+    return endTemp - startTemp;
+}

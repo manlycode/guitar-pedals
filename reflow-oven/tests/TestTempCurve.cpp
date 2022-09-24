@@ -23,3 +23,12 @@ TEST_FIXTURE(TempCurve, Duration)
     CHECK_EQUAL(60.0, duration(3));
     CHECK_EQUAL(50.0*60, duration(4));
 }
+
+TEST_FIXTURE(TempCurve, DeltaTemp)
+{
+    CHECK_EQUAL(100.0-25.0,  deltaTemp(0));
+    CHECK_EQUAL(150.0-100.0, deltaTemp(1));
+    CHECK_EQUAL(183.0-150.0, deltaTemp(2));
+    CHECK_EQUAL(235.0-183.0, deltaTemp(3));
+    CHECK_EQUAL(183.0-235.0, deltaTemp(4));
+}

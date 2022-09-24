@@ -28,6 +28,7 @@ public:
     TempTarget* getTarget(int idx);
     double slope(int idx);
     double duration(int idx);
+    double deltaTemp(int idx);
     
     TempCurve() {
         targets[0] = TempTarget(30.0, 100.0);
