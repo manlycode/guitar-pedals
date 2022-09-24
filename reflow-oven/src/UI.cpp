@@ -41,8 +41,8 @@ void UI::renderSplashScreen() {
     oled->setTextSize(1);
     oled->setCursor(0, VIEW_Y);
     
-    oled->printlnf(F("T:%0.1fF (o): %0.1fF"), ovenState->temp(), ovenState->targetTemp());
-    oled->printlnf(F("Next T: %0.1fF"), ovenState->predictedTemp());
+    oled->printlnf(F("T:%0.1fC (o): %0.1fC"), ovenState->temp(), ovenState->targetTemp());
+    oled->printlnf(F("Next T: %0.1fC"), ovenState->predictedTemp());
     oled->printlnf(F("V: %+0.2f"), ovenState->velocity());
     oled->printlnf(F("A: %+0.2f"), ovenState->acceleration());
     oled->printlnf(F("Htr:%d:%d:%d Ctl:%d:%d:%d"),  ovenState->heaterEnabled(), ovenState->pulseReady(), ovenState->canHeat(), ovenState->dc_fan_control, ovenState->convection_speed_control, ovenState->convection_control);

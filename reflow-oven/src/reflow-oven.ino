@@ -100,7 +100,7 @@ void doRotate(){
 }
 
 void doPeriodic(){
-  Log.info("doPeriodic...");
+  Log.info(F("Free Memory: %lu"), System.freeMemory());
   ovenState.onPeriodic(millis());
 }
 
@@ -160,7 +160,7 @@ void loop() {
   interrupts();
 
   ntc.readADC();
-  ovenState.update(millis(), ntc.readTempF());
+  ovenState.update(millis(), ntc.readTempC());
   ui.markDirty();
   delay(1);
   ui.render();

@@ -13,10 +13,12 @@ testlib     = UnitTest++
 testlibpath = $(testlibdir)/lib$(testlib).a
 testrunner  = tests/Main.cpp
 
-objects = src/OvenState.o
+objects = src/OvenState.o \
+			src/TempCurve.o
 
 testobjects = tests/TestOvenState.o \
-				tests/TestTimeline.o
+				tests/TestTimeline.o \
+				tests/TestTempCurve.o
 
 LDFLAGS ?= -Lsrc -l$(name) -L$(testlibdir) -l$(testlib)
 
