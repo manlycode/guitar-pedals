@@ -41,7 +41,7 @@ void UI::renderSplashScreen() {
     oled->setTextSize(1);
     oled->setCursor(0, VIEW_Y);
     
-    oled->printlnf(F("T:%0.1fF  (o): %0.1fF"), ovenState->temp(), ovenState->targetTemp());
+    oled->printlnf(F("T:%0.1fF (o): %0.1fF"), ovenState->temp(), ovenState->targetTemp());
     oled->printlnf(F("Next T: %0.1fF"), ovenState->predictedTemp());
     oled->printlnf(F("V: %+0.2f"), ovenState->velocity());
     oled->printlnf(F("A: %+0.2f"), ovenState->acceleration());
@@ -76,8 +76,20 @@ char* UI::modeName(OvenMode mode) const
     case OvenMode::Startup:
         return F("Startup");
 
+    case OvenMode::RampToSoak:
+        return F("RampToSoak");
+
     case OvenMode::Preheat:
         return F("Preheat");
+
+    case OvenMode::RampToPeak:
+        return F("RampToPeak");
+
+    case OvenMode::Reflow:
+        return F("Reflow");
+        
+    case OvenMode::Cooling:
+        return F("Cooling");
 
     case OvenMode::Canceling:
         return F("Canceling");
