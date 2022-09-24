@@ -14,3 +14,12 @@ TEST_FIXTURE(TempCurve, DefaultMembers)
     CHECK_EQUAL(240.0, getTarget(4)->t);
     CHECK_EQUAL(183.0, getTarget(4)->temp);
 }
+
+TEST_FIXTURE(TempCurve, Duration)
+{
+    CHECK_EQUAL(30.0,  duration(0));
+    CHECK_EQUAL(90.0, duration(1));
+    CHECK_EQUAL(30.0, duration(2));
+    CHECK_EQUAL(60.0, duration(3));
+    CHECK_EQUAL(50.0*60, duration(4));
+}

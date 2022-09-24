@@ -17,16 +17,17 @@ public:
     }
 };
 
-
+#define TEMP_CURVE_SIZE 5
 class TempCurve
 {
 private:
-    TempTarget targets[5] = {TempTarget(0, 0), TempTarget(0, 0), TempTarget(0, 0), TempTarget(0, 0), TempTarget(0, 0)};
+    TempTarget targets[TEMP_CURVE_SIZE] = {TempTarget(0, 0), TempTarget(0, 0), TempTarget(0, 0), TempTarget(0, 0), TempTarget(0, 0)};
     void init(double t1, double temp1, double t2, double temp2, double t3, double temp3, double t4, double temp4, double t5, double temp5);
 
 public:
     TempTarget* getTarget(int idx);
     double slope(int idx);
+    double duration(int idx);
     
     TempCurve() {
         targets[0] = TempTarget(30.0, 100.0);

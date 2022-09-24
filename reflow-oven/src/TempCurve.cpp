@@ -13,3 +13,21 @@ TempTarget* TempCurve::getTarget(int idx)
 {
     return &targets[idx];
 }
+
+double TempCurve::duration(int idx)
+{
+    double startT = 0.0;
+    double endT = 0.0;
+
+    if (idx> 0) {
+        startT = getTarget(idx-1)->t;
+    }
+
+    if (idx < (TEMP_CURVE_SIZE-1)){
+        endT = getTarget(idx)->t;
+    } else {
+        return 50.0*60;
+    }
+
+    return endT - startT;
+}
