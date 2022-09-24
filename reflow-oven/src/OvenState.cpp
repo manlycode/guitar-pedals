@@ -40,7 +40,7 @@ size_t OvenState::timestamp() {
 }
 
 bool OvenState::isTooHot() {
-    return _predictedTemp >= _targetTemp;
+    return _predictedTemp >= (_targetTemp-5.0);
 }
 
 bool OvenState::canHeat() {
@@ -137,7 +137,31 @@ void OvenState::onNextMode(size_t timestamp)
         break;
 
     case OvenMode::Startup:
+        _targetTemp = 302.0;
+        mode = OvenMode::RampToSoak;
+        break;
+
+    case OvenMode::RampToSoak:
+        _targetTemp = 302.0;
         mode = OvenMode::Preheat;
+        timeline.schedule(timestamp, 60*1000, &OvenState::onNextMode, this);
+
+        break;
+
+    case OvenMode::Preheat:
+        _targetTemp = 422.0;
+        mode = OvenMode::RampToPeak;
+        break;
+
+    case OvenMode::RampToPeak:
+        _targetTemp = 422.0;
+        mode = OvenMode::Reflow;
+        timeline.schedule(timestamp, 45*1000, &OvenState::onNextMode, this);
+        break;
+
+    case OvenMode::Reflow:
+        _targetTemp = 70.0;
+        mode = OvenMode::Cooling;
         break;
 
     case OvenMode::Canceling:
@@ -154,6 +178,27 @@ void OvenState::onNextMode(size_t timestamp)
 void OvenState::onPeriodic(size_t timestamp) 
 {
     timeline.runScheduled(timestamp);
+    switch (mode)
+    {
+    case OvenMode::RampToSoak:
+        if (temp() >= targetTemp()-5.0)
+        {
+            onNextMode(timestamp);
+        }
+        
+        break;
+
+    case OvenMode::RampToPeak:
+        if (temp() >= targetTemp()-5.0)
+        {
+            onNextMode(timestamp);
+        }
+        
+        break;
+    
+    default:
+        break;
+    }
 }
 
 void OvenState::onHeaterReady(size_t _ts) {

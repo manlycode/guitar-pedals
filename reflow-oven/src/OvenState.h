@@ -20,7 +20,11 @@
 enum OvenMode {
     Standby,
     Startup,
+    RampToSoak,
     Preheat,
+    RampToPeak,
+    Reflow,
+    Cooling,
     Canceling
 };
 
