@@ -48,5 +48,10 @@ double TempCurve::velocity(int idx)
 {
     double dTemp = deltaTemp(idx);
     double dTime = duration(idx);
+    
+    if (dTime <= 0.0) {
+        return 0.0;
+    }
+
     return dTemp/dTime;
 }
