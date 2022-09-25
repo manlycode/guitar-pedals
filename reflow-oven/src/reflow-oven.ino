@@ -50,11 +50,14 @@ UI ui(&oled, &ovenState, &ntc);
 long oldPosition  = -999;
 
 void phaseAngleZero(){
+  noInterrupts();
   if (!ovenState.canHeat()) {
+    pinResetFast(HEATER_TOP);
+    pinResetFast(HEATER_BOTTOM);
+    interrupts();
     return;
   }
 
-  noInterrupts();
   pinResetFast(HEATER_TOP);
   // pinResetFast(HEATER_MIDDLE);
   pinResetFast(HEATER_BOTTOM);
@@ -100,7 +103,6 @@ void doRotate(){
 }
 
 void doPeriodic(){
-  Log.info(F("Free Memory: %lu"), System.freeMemory());
   ovenState.onPeriodic(millis());
 }
 
@@ -159,8 +161,12 @@ void loop() {
   digitalWriteFast(CONVECTION_CONTROL, ovenState.convection_control);
   interrupts();
 
+  delay(10);
+
   ntc.readADC();
   ovenState.update(millis(), ntc.readTempC());
+
+  
   ui.markDirty();
   delay(1);
   ui.render();

@@ -8,7 +8,7 @@
     #include "application.h"
 #endif
 
-#define TIMELINE_SIZE 10
+#define TIMELINE_SIZE 20
 #define NULL_DEADLINE (size_t)NULL
 
 

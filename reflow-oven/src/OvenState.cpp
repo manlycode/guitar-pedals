@@ -1,4 +1,5 @@
 #include "OvenState.h"
+#include "TempCurve.h"
 
 // ---------------------------------------
 // Getters
@@ -26,6 +27,10 @@ double OvenState::targetTemp() {
     return _targetTemp;
 }
 
+double OvenState::targetVelocity() {
+    return _targetVelocity;
+}
+
 double OvenState::velocity()
 {
     return _velocity;
@@ -40,7 +45,7 @@ size_t OvenState::timestamp() {
 }
 
 bool OvenState::isTooHot() {
-    return _predictedTemp >= (_targetTemp-5.0);
+    return (_predictedTemp >= _targetTemp) || (_velocity > _targetVelocity);
 }
 
 bool OvenState::canHeat() {
@@ -116,6 +121,7 @@ bool OvenState::onStart(size_t timestamp)
 bool OvenState::onCancel(size_t timestamp) 
 {
     mode = OvenMode::Canceling;
+    updateTempAndVelocity();
     _heaterPulseReady = false;
     dc_fan_control = false;
     convection_control = false;
@@ -129,6 +135,8 @@ bool OvenState::onCancel(size_t timestamp)
 
 void OvenState::onNextMode(size_t timestamp) 
 {
+    bool scheduleNextModeWithTimeline = false;
+
     switch (mode)
     {
     case OvenMode::Standby:
@@ -137,31 +145,35 @@ void OvenState::onNextMode(size_t timestamp)
         break;
 
     case OvenMode::Startup:
-        _targetTemp = 302.0;
         mode = OvenMode::RampToSoak;
         break;
 
     case OvenMode::RampToSoak:
-        _targetTemp = 302.0;
         mode = OvenMode::Preheat;
-        timeline.schedule(timestamp, 60*1000, &OvenState::onNextMode, this);
-
+        scheduleNextModeWithTimeline = true;
         break;
 
     case OvenMode::Preheat:
-        _targetTemp = 422.0;
         mode = OvenMode::RampToPeak;
         break;
 
     case OvenMode::RampToPeak:
-        _targetTemp = 422.0;
         mode = OvenMode::Reflow;
-        timeline.schedule(timestamp, 45*1000, &OvenState::onNextMode, this);
+        scheduleNextModeWithTimeline = true;
         break;
 
     case OvenMode::Reflow:
-        _targetTemp = 70.0;
+        mode = OvenMode::RampToCool;
+        break;
+
+    case OvenMode::RampToCool:
         mode = OvenMode::Cooling;
+        scheduleNextModeWithTimeline = true;
+        break;
+
+    case OvenMode::Cooling:
+        mode = OvenMode::Standby;
+        scheduleNextModeWithTimeline = true;
         break;
 
     case OvenMode::Canceling:
@@ -173,15 +185,26 @@ void OvenState::onNextMode(size_t timestamp)
         onCancel(timestamp);
         break;
     }
+
+    updateTempAndVelocity();
+
+    if (scheduleNextModeWithTimeline) {
+        timeline.schedule(timestamp, tempCurve.duration(mode)*1000, &OvenState::onNextMode, this);
+    }
+}
+
+void OvenState::updateTempAndVelocity() 
+{
+    _targetTemp = tempCurve.temp(mode);
+    _targetVelocity = tempCurve.velocity(mode);
 }
 
 void OvenState::onPeriodic(size_t timestamp) 
 {
-    timeline.runScheduled(timestamp);
     switch (mode)
     {
     case OvenMode::RampToSoak:
-        if (temp() >= targetTemp()-5.0)
+        if (_temp >= _targetTemp)
         {
             onNextMode(timestamp);
         }
@@ -189,16 +212,25 @@ void OvenState::onPeriodic(size_t timestamp)
         break;
 
     case OvenMode::RampToPeak:
-        if (temp() >= targetTemp()-5.0)
+        if (_temp >= _targetTemp)
         {
             onNextMode(timestamp);
         }
         
         break;
+
+    case OvenMode::RampToCool:
+        if (_temp > _targetTemp)
+        {
+            onNextMode(timestamp);
+        }
+        break;
     
     default:
         break;
     }
+
+    timeline.runScheduled(timestamp);
 }
 
 void OvenState::onHeaterReady(size_t _ts) {
