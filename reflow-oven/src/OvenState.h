@@ -26,7 +26,8 @@ enum OvenMode {
     Reflow,
     RampToCool,
     Cooling,
-    Canceling
+    Canceling,
+    Finishing
 };
 
 class OvenState
@@ -98,6 +99,8 @@ public:
 
     bool onStart(size_t timestamp);
     bool onCancel(size_t timestamp);
+    bool onFinish(size_t timestamp);
+    bool doFinish(size_t timestamp);
     void updateTempAndVelocity();
     void onNextMode(size_t timestamp);
     void onPeriodic(size_t timestamp);

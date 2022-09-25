@@ -79,7 +79,7 @@ void doButtonPress(){
   switch (ovenState.mode)
   {
   case OvenMode::Standby:
-    ovenState.onNextMode(timestamp);  
+    ovenState.onNextMode(timestamp);
     break;
 
   case OvenMode::Startup:

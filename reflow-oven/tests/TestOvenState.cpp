@@ -229,39 +229,77 @@ TEST_FIXTURE(OvenState, CanHeatHeaterDisabledPulseIsReady) {
   // CHECK_EQUAL(true, canHeat());
 }
 
-TEST_FIXTURE(OvenState, OnIncTargetTemp) {
+// TEST_FIXTURE(OvenState, OnIncTargetTemp) {
   
-  setup(0, 72.0);
-  CHECK_EQUAL(70.0, targetTemp());
+//   setup(0, 72.0);
+//   CHECK_EQUAL(70.0, targetTemp());
 
-  // Does increment/decrement work?
-  onIncTargetTemp(true);
-  CHECK_EQUAL(80.0, targetTemp());
-  onIncTargetTemp(false);
-  CHECK_EQUAL(70.0, targetTemp());
+//   // Does increment/decrement work?
+//   onIncTargetTemp(true);
+//   CHECK_EQUAL(80.0, targetTemp());
+//   onIncTargetTemp(false);
+//   CHECK_EQUAL(70.0, targetTemp());
 
-  // Test upper bounds
-  setTargetTemp(OVEN_STATE_MAX_TEMP);
-  CHECK_EQUAL(OVEN_STATE_MAX_TEMP, targetTemp());
-  onIncTargetTemp(true);
-  CHECK_EQUAL(OVEN_STATE_MAX_TEMP, targetTemp());
-  onIncTargetTemp(false);
-  CHECK_EQUAL(OVEN_STATE_MAX_TEMP-OVEN_STATE_TEMP_INCREMENT, targetTemp());
+//   // Test upper bounds
+//   setTargetTemp(OVEN_STATE_MAX_TEMP);
+//   CHECK_EQUAL(OVEN_STATE_MAX_TEMP, targetTemp());
+//   onIncTargetTemp(true);
+//   CHECK_EQUAL(OVEN_STATE_MAX_TEMP, targetTemp());
+//   onIncTargetTemp(false);
+//   CHECK_EQUAL(OVEN_STATE_MAX_TEMP-OVEN_STATE_TEMP_INCREMENT, targetTemp());
 
-  // Test lower bounds
-  setTargetTemp(OVEN_STATE_MIN_TEMP);
-  CHECK_EQUAL(OVEN_STATE_MIN_TEMP, targetTemp());
-  onIncTargetTemp(false);
-  CHECK_EQUAL(OVEN_STATE_MIN_TEMP, targetTemp());
-  onIncTargetTemp(true);
-  CHECK_EQUAL(OVEN_STATE_MIN_TEMP+OVEN_STATE_TEMP_INCREMENT, targetTemp());
+//   // Test lower bounds
+//   setTargetTemp(OVEN_STATE_MIN_TEMP);
+//   CHECK_EQUAL(OVEN_STATE_MIN_TEMP, targetTemp());
+//   onIncTargetTemp(false);
+//   CHECK_EQUAL(OVEN_STATE_MIN_TEMP, targetTemp());
+//   onIncTargetTemp(true);
+//   CHECK_EQUAL(OVEN_STATE_MIN_TEMP+OVEN_STATE_TEMP_INCREMENT, targetTemp());
+// }
+
+
+// TEST_FIXTURE(OvenState, BeginPreheat)
+// {
+//   OvenState state;
+
+//   CHECK_EQUAL(false, heater_enable_control);
+
+//   // Ready to heat after 8 sec
+//   CHECK_EQUAL(OvenMode::Standby, mode);
+//   onNextMode(0);
+//   CHECK_EQUAL(OvenMode::Startup, mode);
+//   CHECK_EQUAL(false, _heaterPulseReady);
+//   CHECK_EQUAL(false, dc_fan_control);
+
+//   // DC fan ready in 70ms
+//   onPeriodic(70);
+//   CHECK_EQUAL(true, dc_fan_control);
+
+//   // Conv Speed ready in 270ms
+//   CHECK_EQUAL(false, convection_speed_control);
+//   onPeriodic(270);
+//   CHECK_EQUAL(true, convection_speed_control);
+
+//   // Conv control ready in 470ms
+//   CHECK_EQUAL(false, convection_control);
+//   onPeriodic(470);
+//   CHECK_EQUAL(true, convection_control);
+
+//   // Heaters come on in 8s
+//   CHECK_EQUAL(OvenMode::Startup, mode);
+//   CHECK_EQUAL(false, _heaterPulseReady);
+//   onPeriodic(8*1000);
+//   // CHECK_EQUAL(OvenMode::Preheat, mode);
+//   // CHECK_EQUAL(true, _heaterPulseReady);
+// }
+
+double seconds(double sec)
+{
+  return sec*1000.00;
 }
-
 
 TEST_FIXTURE(OvenState, BeginPreheat)
 {
-  OvenState state;
-
   CHECK_EQUAL(false, heater_enable_control);
 
   // Ready to heat after 8 sec
@@ -288,7 +326,45 @@ TEST_FIXTURE(OvenState, BeginPreheat)
   // Heaters come on in 8s
   CHECK_EQUAL(OvenMode::Startup, mode);
   CHECK_EQUAL(false, _heaterPulseReady);
-  onPeriodic(8*1000);
-  // CHECK_EQUAL(OvenMode::Preheat, mode);
-  // CHECK_EQUAL(true, _heaterPulseReady);
+  update(seconds(7), 25.0);
+  onPeriodic(seconds(8));
+  CHECK_EQUAL(OvenMode::RampToSoak, mode);
+  CHECK_EQUAL(true, _heaterPulseReady);
+
+  // Transition to Preheat
+  update(seconds(29), 100.0);
+  onPeriodic(seconds(30));
+  // Time lapse won't change the state here.
+  // It only changes when the temp reaches the 
+  // threshold
+  CHECK_EQUAL(OvenMode::Preheat, mode);
+
+  // Change to Ramp to Peak
+  onPeriodic(seconds(120));
+  CHECK_EQUAL(OvenMode::RampToPeak, mode);
+
+  update(seconds(149), 183.0);
+  onPeriodic(seconds(150));
+  CHECK_EQUAL(OvenMode::Reflow, mode);
+
+  onPeriodic(seconds(210));
+  CHECK_EQUAL(OvenMode::RampToCool, mode);
+
+  update(seconds(239), 182.0);
+  onPeriodic(seconds(240));
+  CHECK_EQUAL(OvenMode::Cooling, mode);
+
+  update(seconds(480), 33.3);
+  onPeriodic(seconds(481));
+  CHECK_EQUAL(OvenMode::Cooling, mode);
+
+
+  update(seconds(482), 32.22);
+  onPeriodic(seconds(483));
+  CHECK_EQUAL(OvenMode::Finishing, mode);
+  CHECK_EQUAL(false, _heaterPulseReady);
+  CHECK_EQUAL(false, dc_fan_control);
+  CHECK_EQUAL(false, heater_enable_control);
+  CHECK_EQUAL(false, convection_control);
+  CHECK_EQUAL(false, convection_speed_control);
 }

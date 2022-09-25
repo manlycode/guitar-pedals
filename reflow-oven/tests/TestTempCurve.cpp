@@ -18,7 +18,7 @@ TEST_FIXTURE(TempCurve, DefaultMembers)
     CHECK_EQUAL(240.0, getTarget(6)->t);
     CHECK_EQUAL(183.0, getTarget(6)->temp);
     CHECK_EQUAL(240.0+240.0,  getTarget(7)->t);
-    CHECK_EQUAL(25.0, getTarget(7)->temp);
+    CHECK_EQUAL(32.22, getTarget(7)->temp);
     CHECK_EQUAL(0.0,  getTarget(8)->t);
     CHECK_EQUAL(25.0, getTarget(8)->temp);
 }
@@ -45,7 +45,7 @@ TEST_FIXTURE(TempCurve, DeltaTemp)
     CHECK_EQUAL(183.0-150.0, deltaTemp(4));
     CHECK_EQUAL(235.0-183.0, deltaTemp(5));
     CHECK_EQUAL(183.0-235.0, deltaTemp(6));
-    CHECK_EQUAL(25.0-183, deltaTemp(7));
+    CHECK_EQUAL(32.22-183, deltaTemp(7));
     CHECK_EQUAL(0.0, deltaTemp(8));
 }
 
@@ -58,6 +58,6 @@ TEST_FIXTURE(TempCurve, Velocity)
     CHECK_EQUAL((183.0-150.0)/30.0, velocity(4));
     CHECK_EQUAL((235.0-183.0)/60.0, velocity(5));
     CHECK_EQUAL((183.0-235.0)/30,   velocity(6));
-    CHECK_EQUAL((25.0-183)/240,     velocity(7));
+    CHECK_EQUAL((32.22-183)/240,     velocity(7));
     CHECK_EQUAL(0.0,                velocity(8));
 }

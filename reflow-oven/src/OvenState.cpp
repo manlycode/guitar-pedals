@@ -121,6 +121,17 @@ bool OvenState::onStart(size_t timestamp)
 bool OvenState::onCancel(size_t timestamp) 
 {
     mode = OvenMode::Canceling;
+    return doFinish(timestamp);
+}
+
+bool OvenState::onFinish(size_t timestamp) 
+{
+    mode = OvenMode::Finishing;
+    return doFinish(timestamp);
+}
+
+bool OvenState::doFinish(size_t timestamp) 
+{
     updateTempAndVelocity();
     _heaterPulseReady = false;
     dc_fan_control = false;
@@ -168,12 +179,11 @@ void OvenState::onNextMode(size_t timestamp)
 
     case OvenMode::RampToCool:
         mode = OvenMode::Cooling;
-        scheduleNextModeWithTimeline = true;
         break;
 
     case OvenMode::Cooling:
-        mode = OvenMode::Standby;
-        scheduleNextModeWithTimeline = true;
+        mode = OvenMode::Finishing;
+        doFinish(timestamp);
         break;
 
     case OvenMode::Canceling:
@@ -182,7 +192,7 @@ void OvenState::onNextMode(size_t timestamp)
 
     default:
         mode = OvenMode::Canceling;
-        onCancel(timestamp);
+        doFinish(timestamp);
         break;
     }
 
@@ -220,7 +230,14 @@ void OvenState::onPeriodic(size_t timestamp)
         break;
 
     case OvenMode::RampToCool:
-        if (_temp > _targetTemp)
+        if (_temp <= _targetTemp)
+        {
+            onNextMode(timestamp);
+        }
+        break;
+
+    case OvenMode::Cooling:
+        if (_temp <= _targetTemp)
         {
             onNextMode(timestamp);
         }
@@ -229,7 +246,7 @@ void OvenState::onPeriodic(size_t timestamp)
     default:
         break;
     }
-
+    
     timeline.runScheduled(timestamp);
 }
 
