@@ -9,7 +9,7 @@
 #endif
 
 #include "Timeline.h"
-
+#include "TempCurve.h"
 // #include "Timeline.h"
 
 #define OVEN_STATE_MIN_TEMP 70.0
@@ -24,19 +24,23 @@ enum OvenMode {
     Preheat,
     RampToPeak,
     Reflow,
+    RampToCool,
     Cooling,
-    Canceling
+    Canceling,
+    Finishing
 };
 
 class OvenState
 {
 private:
+    TempCurve tempCurve;
     size_t _timestamp;
 
     // Temperatures
     double _temp;
     double _predictedTemp;
     double _targetTemp;
+    double _targetVelocity;
 
     // Telemetry
     double _velocity;
@@ -68,6 +72,7 @@ public:
     double velocity();
     double acceleration();
     double targetTemp();
+    double targetVelocity();
     size_t timestamp();
 
     bool heaterEnabled();
@@ -94,6 +99,9 @@ public:
 
     bool onStart(size_t timestamp);
     bool onCancel(size_t timestamp);
+    bool onFinish(size_t timestamp);
+    bool doFinish(size_t timestamp);
+    void updateTempAndVelocity();
     void onNextMode(size_t timestamp);
     void onPeriodic(size_t timestamp);
     void onIncTargetTemp(bool);
@@ -114,7 +122,8 @@ public:
     OvenState()
     {
         _temp = 0.0;
-        _targetTemp = 70.00;
+        _targetTemp = 25.00;
+        _targetVelocity = 0.0;
         _predictedTemp = 0.0;
         _timestamp = 0;
         _velocity = 0.0;
