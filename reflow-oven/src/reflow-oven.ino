@@ -9,7 +9,7 @@ SYSTEM_MODE(SEMI_AUTOMATIC);
 #include "OvenState.h"
 #include "UI.h"
 #include "Thermistor.h"
-#include "BTService.h"
+#include "OvenStateService.h"
 
 /* ------------------------------------
 Pin definitions
@@ -48,7 +48,7 @@ Timer periodic(PERIODIC_DELAY, doPeriodic);
 Thermistor ntc(TEMP_NTC, 4233.27, 24000.0);
 
 UI ui(&oled, &ovenState, &ntc);
-BTService btService;
+OvenStateService btService;
 
 long oldPosition  = -999;
 
@@ -153,8 +153,11 @@ void setup()   {
   periodic.start();
   // Serial.printlnf("starting...");
   // Particle.connect();
-  
-  BLE.addCharacteristic(&btService.tempChar);
+
+
+  BLE.addCharacteristic(btService.timeChar);
+  BLE.addCharacteristic(btService.tempChar);
+  BLE.addCharacteristic(btService.velocityChar);  
   BLE.advertise(&btService.advData);
 
 }
@@ -172,7 +175,7 @@ void loop() {
 
   ntc.readADC();
   ovenState.update(millis(), ntc.readTempC());
-
+  btService.writeOvenState(millis(), ovenState.temp(), ovenState.velocity());
   
   ui.markDirty();
   delay(1);
