@@ -6,8 +6,18 @@
 
 void UI::setup()
 {   
-    oled->begin(SSD1306_SWITCHCAPVCC, 0x3C);  // initialize with the I2C addr 0x3D (for the 128x64)
+    oled->begin(SSD1306_SWITCHCAPVCC, 0x3D );  // initialize with the I2C addr 0x3D (for the 128x64)
+    oled2->begin(SSD1306_SWITCHCAPVCC, 0x3C );  // initialize with the I2C addr 0x3D (for the 128x64)
     oled->clearDisplay();
+    oled2->clearDisplay();
+    oled2->setTextColor(WHITE);
+    oled2->setTextSize(2);
+    oled2->setCursor(10, VIEW_Y);
+    oled2->printlnf(F("BAKE SOME"));
+
+    oled2->setCursor(30, VIEW_Y+20);
+    oled2->printlnf(F("BOARDS!"));
+    oled2->display();
 }
 
 void UI::render() {

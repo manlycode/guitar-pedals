@@ -9,6 +9,8 @@ SYSTEM_MODE(SEMI_AUTOMATIC);
 #include "OvenState.h"
 #include "UI.h"
 #include "Thermistor.h"
+#include "OvenStateService.h"
+
 /* ------------------------------------
 Pin definitions
 ------------------------------------ */
@@ -39,13 +41,15 @@ Pin definitions
 SerialLogHandler logger;
 Encoder encoder(ENCODER_B, ENCODER_A);
 Adafruit_SSD1306 oled(OLED_RESET);
+Adafruit_SSD1306 oled2(OLED_RESET);
 
 OvenState ovenState;
 // Timer timerPulseReady(8000, &OvenState::onHeaterReady, ovenState, true);
 Timer periodic(PERIODIC_DELAY, doPeriodic);
 Thermistor ntc(TEMP_NTC, 4233.27, 24000.0);
 
-UI ui(&oled, &ovenState, &ntc);
+UI ui(&oled, &oled2, &ovenState, &ntc);
+OvenStateService btService;
 
 long oldPosition  = -999;
 
@@ -150,6 +154,13 @@ void setup()   {
   periodic.start();
   // Serial.printlnf("starting...");
   // Particle.connect();
+
+
+  BLE.addCharacteristic(btService.timeChar);
+  BLE.addCharacteristic(btService.tempChar);
+  BLE.addCharacteristic(btService.velocityChar);  
+  BLE.advertise(&btService.advData);
+
 }
 
 
@@ -165,7 +176,7 @@ void loop() {
 
   ntc.readADC();
   ovenState.update(millis(), ntc.readTempC());
-
+  btService.writeOvenState(millis(), ovenState.temp(), ovenState.velocity());
   
   ui.markDirty();
   delay(1);
