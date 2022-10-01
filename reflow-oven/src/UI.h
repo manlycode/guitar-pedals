@@ -10,6 +10,7 @@ class UI
 {
 private:
     Adafruit_SSD1306* oled;
+    Adafruit_SSD1306* oled2;
     OvenState* ovenState;
     Thermistor* thermistor;
     
@@ -34,9 +35,10 @@ public:
     // Callbacks
     void markDirty();
 
-    UI(Adafruit_SSD1306* _oled, OvenState* _ovenState, Thermistor* _thermistor)
+    UI(Adafruit_SSD1306* _oled, Adafruit_SSD1306* _oled2, OvenState* _ovenState, Thermistor* _thermistor)
     {
         oled = _oled;
+        oled2 = _oled2;
         // renderView = &UI::renderSplashScreen;
         renderView = &UI::renderSplashScreen;
         rotateVal = -999;
